@@ -3,10 +3,23 @@
 <head>
   <meta charset="utf-8">
   <title>NippoHub Test</title>
+  <script src="https://www.gstatic.com/firebasejs/5.7.1/firebase.js"></script>
+  <script>
+    const config = {
+      apiKey: 'AIzaSyCXywBE-aluaZRia5n2mNZpZQZqBIz0WTw',
+      authDomain: 'nippohub-test.firebaseapp.com',
+      databaseURL: 'https://nippohub-test.firebaseio.com',
+      projectId: 'nippohub-test',
+      storageBucket: 'nippohub-test.appspot.com',
+      messagingSenderId: '741511136654'
+    };
+    firebase.initializeApp(config);
+  </script>
+  <script src="/application.js"></script>
 </head>
 <body>
-  <form>
-    <input type="text">
+  <form id="js-form-memo">
+    <input type="text" id="js-content-text-field">
     <button type="submit">送信</button>
   </form>
   <ul>
