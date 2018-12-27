@@ -1,4 +1,5 @@
 window.addEventListener('load', () => {
+  const ui = new firebaseui.auth.AuthUI(firebase.auth());
   const database = firebase.database();
   const form = document.getElementById('js-form-memo');
   const memoTextField = document.getElementById('js-content-text-field');
@@ -26,5 +27,16 @@ window.addEventListener('load', () => {
       contents: memoTextField.value
     });
     memoTextField.value = '';
+  });
+
+  ui.start('#js-form-auth-area', {
+    signInSuccessUrl: '/',
+    signInOptions: [
+      firebase.auth.EmailAuthProvider.PROVIDER_ID
+    ]
+  });
+
+  firebase.auth().onAuthStateChanged(user => {
+    console.log(user);
   });
 });
