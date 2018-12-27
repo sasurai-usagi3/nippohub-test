@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>NippoHub Test</title>
   <script src="https://www.gstatic.com/firebasejs/5.7.1/firebase.js"></script>
+  <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
   <script>
     const config = {
       apiKey: 'AIzaSyCXywBE-aluaZRia5n2mNZpZQZqBIz0WTw',
@@ -16,8 +17,11 @@
     firebase.initializeApp(config);
   </script>
   <script src="/application.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
 </head>
 <body>
+  <div id="js-form-auth-area">
+  </form>
   <form id="js-form-memo">
     <input type="text" id="js-content-text-field">
     <button type="submit">送信</button>
