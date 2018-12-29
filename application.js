@@ -1,5 +1,26 @@
-window.addEventListener('load', () => {
+firebase.auth().onAuthStateChanged(currentUser => {
   const ui = new firebaseui.auth.AuthUI(firebase.auth());
+  const pageAuth = document.getElementById('js-page-auth');
+  const pageMain = document.getElementById('js-page-main');
+
+  if(currentUser != null) {
+    console.log(pageAuth);
+    pageAuth.setAttribute('hidden', 'hidden');
+    pageMain.removeAttribute('hidden');
+    init();
+  } else {
+    ui.start('#js-form-auth-area', {
+      signInSuccessUrl: '/',
+      signInOptions: [
+        firebase.auth.EmailAuthProvider.PROVIDER_ID
+      ]
+    });
+
+    return;
+  }
+});
+
+const init = () => {
   const database = firebase.database();
   const form = document.getElementById('js-form-memo');
   const memoTextField = document.getElementById('js-content-text-field');
@@ -28,15 +49,4 @@ window.addEventListener('load', () => {
     });
     memoTextField.value = '';
   });
-
-  ui.start('#js-form-auth-area', {
-    signInSuccessUrl: '/',
-    signInOptions: [
-      firebase.auth.EmailAuthProvider.PROVIDER_ID
-    ]
-  });
-
-  firebase.auth().onAuthStateChanged(user => {
-    console.log(user);
-  });
-});
+};
