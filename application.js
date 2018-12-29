@@ -6,7 +6,6 @@ auth.onAuthStateChanged(currentUser => {
   const pageMain = document.getElementById('js-page-main');
 
   if(currentUser != null) {
-    console.log(pageAuth);
     pageAuth.setAttribute('hidden', 'hidden');
     pageMain.removeAttribute('hidden');
     init();
