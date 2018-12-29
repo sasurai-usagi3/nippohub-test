@@ -1,5 +1,7 @@
-firebase.auth().onAuthStateChanged(currentUser => {
-  const ui = new firebaseui.auth.AuthUI(firebase.auth());
+const auth = firebase.auth();
+const ui = new firebaseui.auth.AuthUI(auth);
+
+auth.onAuthStateChanged(currentUser => {
   const pageAuth = document.getElementById('js-page-auth');
   const pageMain = document.getElementById('js-page-main');
 
@@ -50,3 +52,11 @@ const init = () => {
     memoTextField.value = '';
   });
 };
+
+window.addEventListener('load', () => {
+  const btnToSignOut = document.getElementById('js-sign-out');
+
+  btnToSignOut.addEventListener('click', () => {
+    auth.signOut();
+  });
+});
