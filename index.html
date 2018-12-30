@@ -17,25 +17,37 @@
     firebase.initializeApp(config);
   </script>
   <script src="/application.js"></script>
+  <link rel="stylesheet" href="/application.css">
   <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
 </head>
 <body>
+  <header class="l-header">
+    <div class="l-header__content p-header-content">
+      <h1 class="p-page-title">NippoHub be-ta</h1>
+      <button id="js-sign-out" class="p-sign-out-link">サインアウト</button>
+    </div>
+  </header>
   <div id="js-page-main" hidden>
-    <form id="js-form-memo">
-      <input type="text" id="js-content-text-field">
-      <button type="submit">送信</button>
-    </form>
-    <ul id="js-list-memo">
-      <li>xxxという知見を得た</li>
-      <li>yyyわからん</li>
-      <li>xxxという知見を得た</li>
-      <li>yyyわからん</li>
-      <li>xxxという知見を得た</li>
-      <li>yyyわからん</li>
-      <li>xxxという知見を得た</li>
-      <li>yyyわからん</li>
-    </ul>
-    <button id="js-sign-out">サインアウト</button>
+    <div class="l-container">
+      <form id="js-form-memo" class="p-memo-form">
+        <div>
+          <textarea id="js-content-text-field" class="p-memo-form__text-field"></textarea>
+        </div>
+        <div class="u-text-align-right u-mt-10">
+          <button type="submit" class="p-memo-form__submit">メモする</button>
+        </div>
+      </form>
+      <ul id="js-list-memo" class="p-memo-list">
+        <li class="p-memo-list__item">xxxという知見を得た</li>
+        <li class="p-memo-list__item">yyyわからん</li>
+        <li class="p-memo-list__item">xxxという知見を得た</li>
+        <li class="p-memo-list__item">yyyわからん</li>
+        <li class="p-memo-list__item">xxxという知見を得た</li>
+        <li class="p-memo-list__item">yyyわからん</li>
+        <li class="p-memo-list__item">xxxという知見を得た</li>
+        <li class="p-memo-list__item">yyyわからん</li>
+      </ul>
+    </div>
   </div>
   <div id="js-page-auth">
     <div id="js-form-auth-area"></div>
