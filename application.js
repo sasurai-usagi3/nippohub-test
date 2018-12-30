@@ -38,6 +38,7 @@ const init = (userId) => {
       const li = document.createElement('li');
 
       li.textContent = data[v].contents;
+      li.classList.add('p-memo-list__item');
 
       listMemo.appendChild(li);
     }
