@@ -26,6 +26,7 @@ const init = (userId) => {
   const form = document.getElementById('js-form-memo');
   const memoTextField = document.getElementById('js-content-text-field');
   const listMemo = document.getElementById('js-list-memo');
+  const normalizeDateElm = x => `0${x}`.slice(-2);
 
   database.ref('memos').orderByChild('userId').equalTo(userId).on('value', r => {
     const data = r.val();
@@ -36,8 +37,11 @@ const init = (userId) => {
 
     for(let v in data) {
       const li = document.createElement('li');
+      const createdAt = new Date(data[v].timestamp);
+      const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
+      const contents = data[v].contents;
 
-      li.textContent = data[v].contents;
+      li.textContent = `${createdAtStr} > ${contents}`;
       li.classList.add('p-memo-list__item');
 
       listMemo.appendChild(li);
@@ -48,7 +52,8 @@ const init = (userId) => {
     e.preventDefault();
     database.ref('memos').push({
       contents: memoTextField.value,
-      userId: userId
+      userId: userId,
+      timestamp: Date.now()
     });
     memoTextField.value = '';
   });
