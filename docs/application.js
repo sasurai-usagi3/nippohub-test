@@ -27,8 +27,10 @@ const init = (userId) => {
   const memoTextField = document.getElementById('js-content-text-field');
   const listMemo = document.getElementById('js-list-memo');
   const normalizeDateElm = x => `0${x}`.slice(-2);
+  const today = new Date();
+  const beginningOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-  database.ref(`users/${userId}/memos`).orderByChild('timestamp').on('value', r => {
+  database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfToday.getTime()).on('value', r => {
     const data = r.val();
 
     for(let i = listMemo.children.length - 1; i >= 0; --i) {
