@@ -41,12 +41,16 @@ const init = (userId) => {
 
     for(let v in data) {
       const li = document.createElement('li');
+      const span = document.createElement('span');
       const createdAt = new Date(data[v].timestamp);
       const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
       const contents = data[v].contents;
 
-      li.textContent = `${createdAtStr} > ${contents}`;
+      span.textContent = contents
+      span.classList.add('js-memo-contents');
+      li.textContent = `${createdAtStr} > `;
       li.classList.add('p-memo-list__item');
+      li.appendChild(span);
 
       listMemo.appendChild(li);
     }
