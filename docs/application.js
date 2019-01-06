@@ -29,6 +29,8 @@ const init = (userId) => {
   const normalizeDateElm = x => `0${x}`.slice(-2);
   const today = new Date();
   const beginningOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const summaryArea = document.getElementById('js-summary-area');
+  const summaryBtn = document.getElementById('js-summary-btn');
 
   database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfToday.getTime()).on('value', r => {
     const data = r.val();
@@ -58,6 +60,10 @@ const init = (userId) => {
       timestamp: Date.now()
     });
     memoTextField.value = '';
+  });
+
+  summaryBtn.addEventListener('click', () => {
+    summaryArea.value = 'test';
   });
 };
 
