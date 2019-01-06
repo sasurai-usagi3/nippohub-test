@@ -33,22 +33,23 @@ body {
   color: #fff;
 }
 
-.p-memo-form__text-field {
+.p-text-field {
+  display: block;
   font-size: 1rem;
   height: calc(4.5rem + 30px);
   width: 100%;
-  border: 1px solid #f4955a;
+  border: 1px solid #777;
   border-radius: 10px;
   padding: 15px;
   resize: none;
   box-sizing: border-box;
 }
 
-.p-memo-form__text-field:focus {
+.p-text-field:focus {
   outline: none
 }
 
-.p-memo-form__submit {
+.p-btn {
   background-color: transparent;
   box-shadow: 0px 0px 10px 2px #f4955a, 0px 0px 10px 2px #f4955a inset;
   border: none;
@@ -97,6 +98,10 @@ body {
 
 .u-mt-10 {
   margin-top: 10px;
+}
+
+.u-mt-20 {
+  margin-top: 20px;
 }
 
 .u-text-align-right {

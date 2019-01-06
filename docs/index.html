@@ -30,11 +30,9 @@
   <div id="js-page-main" hidden>
     <div class="l-container">
       <form id="js-form-memo" class="p-memo-form">
-        <div>
-          <textarea id="js-content-text-field" class="p-memo-form__text-field"></textarea>
-        </div>
+        <textarea id="js-content-text-field" class="p-text-field"></textarea>
         <div class="u-text-align-right u-mt-10">
-          <button type="submit" class="p-memo-form__submit">メモする</button>
+          <button type="submit" class="p-btn">メモする</button>
         </div>
       </form>
       <ul id="js-list-memo" class="p-memo-list">
@@ -47,6 +45,12 @@
         <li class="p-memo-list__item">xxxという知見を得た</li>
         <li class="p-memo-list__item">yyyわからん</li>
       </ul>
+      <div class="u-mt-20">
+        <textarea id="js-summary-area" class="p-text-field"></textarea>
+        <div class="u-text-align-right u-mt-10">
+          <button type="button" id="js-summary-btn" class="p-btn">まとめる</button>
+        </div>
+      </div>
     </div>
   </div>
   <div id="js-page-auth">
