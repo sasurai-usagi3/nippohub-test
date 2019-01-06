@@ -67,7 +67,14 @@ const init = (userId) => {
   });
 
   summaryBtn.addEventListener('click', () => {
-    summaryArea.value = 'test';
+    const contentsDOM = document.querySelectorAll('.js-memo-contents');
+    let contents = '';
+
+    contentsDOM.forEach(x => {
+      contents += `${x.textContent}\n`;
+    });
+
+    summaryArea.value = contents;
   });
 };
 
