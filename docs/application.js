@@ -27,12 +27,19 @@ const init = (userId) => {
   const memoTextField = document.getElementById('js-content-text-field');
   const listMemo = document.getElementById('js-list-memo');
   const normalizeDateElm = x => `0${x}`.slice(-2);
-  const today = new Date();
-  const beginningOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const queryStr = location.search.slice(1);
+  const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
+  const paramDate = (queries.find(x => x[0] === 'date') || [])[1];
+  const currentDate = (paramDate != null) ? new Date(paramDate) : new Date();
+  const beginningOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
+  const endOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59, 999);
   const summaryArea = document.getElementById('js-summary-area');
   const summaryBtn = document.getElementById('js-summary-btn');
 
-  database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfToday.getTime()).on('value', r => {
+  console.log(beginningOfCurrentDate.getTime());
+  console.log(endOfCurrentDate.getTime());
+
+  database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
     const data = r.val();
 
     for(let i = listMemo.children.length - 1; i >= 0; --i) {
