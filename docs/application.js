@@ -25,7 +25,10 @@ const init = (userId) => {
   const database = firebase.database();
   const form = document.getElementById('js-form-memo');
   const memoTextField = document.getElementById('js-content-text-field');
+  const titleDate = document.getElementById('js-title-date');
   const listMemo = document.getElementById('js-list-memo');
+  const linkPreviousDay = document.getElementById('js-link-previous-day');
+  const linkNextDay = document.getElementById('js-link-next-day');
   const normalizeDateElm = x => `0${x}`.slice(-2);
   const queryStr = location.search.slice(1);
   const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
@@ -35,9 +38,12 @@ const init = (userId) => {
   const endOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59, 999);
   const summaryArea = document.getElementById('js-summary-area');
   const summaryBtn = document.getElementById('js-summary-btn');
+  const previousDay = new Date(currentDate.getTime() - 24 * 3600 * 1000);
+  const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
 
-  console.log(beginningOfCurrentDate.getTime());
-  console.log(endOfCurrentDate.getTime());
+  titleDate.textContent = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`
+  linkPreviousDay.setAttribute('href', `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`);
+  linkNextDay.setAttribute('href', `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`);
 
   database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
     const data = r.val();

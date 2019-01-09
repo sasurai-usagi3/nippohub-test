@@ -60,6 +60,11 @@ body {
   transition-duration: 0.25s;
 }
 
+.p-list-title {
+  color: #fff;
+  font-size: 1.1rem;
+}
+
 .p-memo-form__submit:hover {
   color: #fff;
   box-shadow: 0px 0px 10px 4px #f4955a, 0px 0px 40px 5px #f4955a inset;
