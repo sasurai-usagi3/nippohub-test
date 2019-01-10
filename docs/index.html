@@ -46,7 +46,9 @@
         </div>
       </form>
       <h2 class="p-list-title"><span id="js-title-date"></span>の日報</h2>
-      <ul id="js-list-memo" class="p-memo-list"></ul>
+      <ul id="js-list-memo" class="p-memo-list">
+        <li v-for="memo in memos">{{ memo.createdAt }} &gt; <span class="js-memo-contents">{{ memo.contents }}</li>
+      </ul>
       <div class="u-mt-20">
         <textarea id="js-summary-area" class="p-text-field"></textarea>
         <div class="u-text-align-right u-mt-10">

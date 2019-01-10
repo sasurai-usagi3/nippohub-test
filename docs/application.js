@@ -26,7 +26,12 @@ const init = (userId) => {
   const form = document.getElementById('js-form-memo');
   const memoTextField = document.getElementById('js-content-text-field');
   const titleDate = document.getElementById('js-title-date');
-  const listMemo = document.getElementById('js-list-memo');
+  const listMemo = new Vue({
+    el: '#js-list-memo',
+    data: {
+      memos: []
+    }
+  });
   const linkPreviousDay = document.getElementById('js-link-previous-day');
   const linkNextDay = document.getElementById('js-link-next-day');
   const normalizeDateElm = x => `0${x}`.slice(-2);
@@ -48,24 +53,14 @@ const init = (userId) => {
   database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
     const data = r.val();
 
-    for(let i = listMemo.children.length - 1; i >= 0; --i) {
-      listMemo.removeChild(listMemo.children[i]);
-    }
+    listMemo.memo = [];
 
     for(let v in data) {
-      const li = document.createElement('li');
-      const span = document.createElement('span');
       const createdAt = new Date(data[v].timestamp);
       const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
       const contents = data[v].contents;
 
-      span.textContent = contents
-      span.classList.add('js-memo-contents');
-      li.textContent = `${createdAtStr} > `;
-      li.classList.add('p-memo-list__item');
-      li.appendChild(span);
-
-      listMemo.appendChild(li);
+      listMemo.memos.push({contents: contents, createdAt: createdAtStr});
     }
   });
 
