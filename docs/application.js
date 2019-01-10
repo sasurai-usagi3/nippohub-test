@@ -25,8 +25,18 @@ const init = (userId) => {
   const database = firebase.database();
   const form = document.getElementById('js-form-memo');
   const memoTextField = document.getElementById('js-content-text-field');
-  const titleDate = document.getElementById('js-title-date');
-  const listMemo = document.getElementById('js-list-memo');
+  const titleDate = new Vue({
+    el: '#js-title-date',
+    data: {
+      date: ''
+    }
+  });
+  const listMemo = new Vue({
+    el: '#js-list-memo',
+    data: {
+      memos: []
+    }
+  });
   const linkPreviousDay = document.getElementById('js-link-previous-day');
   const linkNextDay = document.getElementById('js-link-next-day');
   const normalizeDateElm = x => `0${x}`.slice(-2);
@@ -41,31 +51,21 @@ const init = (userId) => {
   const previousDay = new Date(currentDate.getTime() - 24 * 3600 * 1000);
   const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
 
-  titleDate.textContent = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`
+  titleDate.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`
   linkPreviousDay.setAttribute('href', `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`);
   linkNextDay.setAttribute('href', `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`);
 
   database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
     const data = r.val();
 
-    for(let i = listMemo.children.length - 1; i >= 0; --i) {
-      listMemo.removeChild(listMemo.children[i]);
-    }
+    listMemo.memo = [];
 
     for(let v in data) {
-      const li = document.createElement('li');
-      const span = document.createElement('span');
       const createdAt = new Date(data[v].timestamp);
       const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
       const contents = data[v].contents;
 
-      span.textContent = contents
-      span.classList.add('js-memo-contents');
-      li.textContent = `${createdAtStr} > `;
-      li.classList.add('p-memo-list__item');
-      li.appendChild(span);
-
-      listMemo.appendChild(li);
+      listMemo.memos.push({contents: contents, createdAt: createdAtStr});
     }
   });
 
