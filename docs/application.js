@@ -25,7 +25,12 @@ const init = (userId) => {
   const database = firebase.database();
   const form = document.getElementById('js-form-memo');
   const memoTextField = document.getElementById('js-content-text-field');
-  const titleDate = document.getElementById('js-title-date');
+  const titleDate = new Vue({
+    el: '#js-title-date',
+    data: {
+      date: ''
+    }
+  });
   const listMemo = new Vue({
     el: '#js-list-memo',
     data: {
@@ -46,7 +51,7 @@ const init = (userId) => {
   const previousDay = new Date(currentDate.getTime() - 24 * 3600 * 1000);
   const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
 
-  titleDate.textContent = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`
+  titleDate.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`
   linkPreviousDay.setAttribute('href', `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`);
   linkNextDay.setAttribute('href', `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`);
 
