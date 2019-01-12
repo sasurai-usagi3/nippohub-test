@@ -104,7 +104,7 @@ const init = (userId) => {
   database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
     const data = r.val();
 
-    listMemo.memo = [];
+    listMemo.memos = [];
 
     for(let v in data) {
       const createdAt = new Date(data[v].timestamp);
