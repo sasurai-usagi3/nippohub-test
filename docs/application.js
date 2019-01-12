@@ -1,4 +1,5 @@
 const auth = firebase.auth();
+const database = firebase.database();
 const ui = new firebaseui.auth.AuthUI(auth);
 const normalizeDateElm = x => `0${x}`.slice(-2);
 const queryStr = location.search.slice(1);
@@ -23,6 +24,25 @@ window.addEventListener('load', () => {
     el: '#js-link-next-day',
     data: {
       url: '#'
+    }
+  });
+  const form = new Vue({
+    el: '#js-form-memo',
+    data: {
+      userIdToSend: null
+    },
+    methods: {
+      submit: function() {
+        const memoTextField = document.getElementById('js-content-text-field');
+        const userId = this.userIdToSend;
+
+        database.ref(`users/${userId}/memos`).push({
+          contents: memoTextField.value,
+          userId: userId,
+          timestamp: Date.now()
+        });
+        memoTextField.value = '';
+      }
     }
   });
   const pageAuth = document.getElementById('js-page-auth');
@@ -53,11 +73,11 @@ window.addEventListener('load', () => {
   });
 
   auth.onAuthStateChanged(currentUser => {
-
     if(currentUser != null) {
       pageAuth.setAttribute('hidden', 'hidden');
       pageMain.removeAttribute('hidden');
       init(currentUser.uid);
+      form.userIdToSend = currentUser.uid;
     } else {
       ui.start('#js-form-auth-area', {
         signInSuccessUrl: '/',
@@ -72,9 +92,6 @@ window.addEventListener('load', () => {
 });
 
 const init = (userId) => {
-  const database = firebase.database();
-  const form = document.getElementById('js-form-memo');
-  const memoTextField = document.getElementById('js-content-text-field');
   const listMemo = new Vue({
     el: '#js-list-memo',
     data: {
@@ -96,15 +113,5 @@ const init = (userId) => {
 
       listMemo.memos.push({contents: contents, createdAt: createdAtStr});
     }
-  });
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    database.ref(`users/${userId}/memos`).push({
-      contents: memoTextField.value,
-      userId: userId,
-      timestamp: Date.now()
-    });
-    memoTextField.value = '';
   });
 };

@@ -39,7 +39,7 @@
   </header>
   <div id="js-page-main" hidden>
     <div class="l-container">
-      <form id="js-form-memo" class="p-memo-form">
+      <form id="js-form-memo" class="p-memo-form" @submit.prevent="submit">
         <textarea id="js-content-text-field" class="p-text-field"></textarea>
         <div class="u-text-align-right u-mt-10">
           <button type="submit" class="p-btn">メモする</button>
