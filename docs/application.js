@@ -37,8 +37,18 @@ const init = (userId) => {
       memos: []
     }
   });
-  const linkPreviousDay = document.getElementById('js-link-previous-day');
-  const linkNextDay = document.getElementById('js-link-next-day');
+  const linkPreviousDay = new Vue({
+    el: '#js-link-previous-day',
+    data: {
+      url: '#'
+    }
+  });
+  const linkNextDay = new Vue({
+    el: '#js-link-next-day',
+    data: {
+      url: '#'
+    }
+  });
   const normalizeDateElm = x => `0${x}`.slice(-2);
   const queryStr = location.search.slice(1);
   const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
@@ -52,8 +62,8 @@ const init = (userId) => {
   const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
 
   titleDate.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`
-  linkPreviousDay.setAttribute('href', `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`);
-  linkNextDay.setAttribute('href', `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`);
+  linkPreviousDay.url = `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
+  linkNextDay.url = `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
 
   database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
     const data = r.val();
