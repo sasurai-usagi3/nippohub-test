@@ -1,40 +1,17 @@
 const auth = firebase.auth();
+const database = firebase.database();
 const ui = new firebaseui.auth.AuthUI(auth);
+const normalizeDateElm = x => `0${x}`.slice(-2);
+const queryStr = location.search.slice(1);
+const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
+const paramDate = (queries.find(x => x[0] === 'date') || [])[1];
+const currentDate = (paramDate != null) ? new Date(paramDate) : new Date();
 
-auth.onAuthStateChanged(currentUser => {
-  const pageAuth = document.getElementById('js-page-auth');
-  const pageMain = document.getElementById('js-page-main');
-
-  if(currentUser != null) {
-    pageAuth.setAttribute('hidden', 'hidden');
-    pageMain.removeAttribute('hidden');
-    init(currentUser.uid);
-  } else {
-    ui.start('#js-form-auth-area', {
-      signInSuccessUrl: '/',
-      signInOptions: [
-        firebase.auth.EmailAuthProvider.PROVIDER_ID
-      ]
-    });
-
-    return;
-  }
-});
-
-const init = (userId) => {
-  const database = firebase.database();
-  const form = document.getElementById('js-form-memo');
-  const memoTextField = document.getElementById('js-content-text-field');
+window.addEventListener('load', () => {
   const titleDate = new Vue({
     el: '#js-title-date',
     data: {
       date: ''
-    }
-  });
-  const listMemo = new Vue({
-    el: '#js-list-memo',
-    data: {
-      memos: []
     }
   });
   const linkPreviousDay = new Vue({
@@ -49,21 +26,80 @@ const init = (userId) => {
       url: '#'
     }
   });
-  const normalizeDateElm = x => `0${x}`.slice(-2);
-  const queryStr = location.search.slice(1);
-  const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
-  const paramDate = (queries.find(x => x[0] === 'date') || [])[1];
-  const currentDate = (paramDate != null) ? new Date(paramDate) : new Date();
-  const beginningOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
-  const endOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59, 999);
+  const form = new Vue({
+    el: '#js-form-memo',
+    data: {
+      userIdToSend: null
+    },
+    methods: {
+      submit: function() {
+        const memoTextField = document.getElementById('js-content-text-field');
+        const userId = this.userIdToSend;
+
+        database.ref(`users/${userId}/memos`).push({
+          contents: memoTextField.value,
+          userId: userId,
+          timestamp: Date.now()
+        });
+        memoTextField.value = '';
+      }
+    }
+  });
+  const pageAuth = document.getElementById('js-page-auth');
+  const pageMain = document.getElementById('js-page-main');
+  const btnToSignOut = document.getElementById('js-sign-out');
   const summaryArea = document.getElementById('js-summary-area');
   const summaryBtn = document.getElementById('js-summary-btn');
   const previousDay = new Date(currentDate.getTime() - 24 * 3600 * 1000);
   const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
 
-  titleDate.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`
+  titleDate.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`;
   linkPreviousDay.url = `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
   linkNextDay.url = `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
+
+  btnToSignOut.addEventListener('click', () => {
+    auth.signOut();
+  });
+
+  summaryBtn.addEventListener('click', () => {
+    const contentsDOM = document.querySelectorAll('.js-memo-contents');
+    let contents = '';
+
+    contentsDOM.forEach(x => {
+      contents += `${x.textContent}\n`;
+    });
+
+    summaryArea.value = contents;
+  });
+
+  auth.onAuthStateChanged(currentUser => {
+    if(currentUser != null) {
+      pageAuth.setAttribute('hidden', 'hidden');
+      pageMain.removeAttribute('hidden');
+      init(currentUser.uid);
+      form.userIdToSend = currentUser.uid;
+    } else {
+      ui.start('#js-form-auth-area', {
+        signInSuccessUrl: '/',
+        signInOptions: [
+          firebase.auth.EmailAuthProvider.PROVIDER_ID
+        ]
+      });
+
+      return;
+    }
+  });
+});
+
+const init = (userId) => {
+  const listMemo = new Vue({
+    el: '#js-list-memo',
+    data: {
+      memos: []
+    }
+  });
+  const beginningOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
+  const endOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59, 999);
 
   database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
     const data = r.val();
@@ -78,33 +114,4 @@ const init = (userId) => {
       listMemo.memos.push({contents: contents, createdAt: createdAtStr});
     }
   });
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    database.ref(`users/${userId}/memos`).push({
-      contents: memoTextField.value,
-      userId: userId,
-      timestamp: Date.now()
-    });
-    memoTextField.value = '';
-  });
-
-  summaryBtn.addEventListener('click', () => {
-    const contentsDOM = document.querySelectorAll('.js-memo-contents');
-    let contents = '';
-
-    contentsDOM.forEach(x => {
-      contents += `${x.textContent}\n`;
-    });
-
-    summaryArea.value = contents;
-  });
 };
-
-window.addEventListener('load', () => {
-  const btnToSignOut = document.getElementById('js-sign-out');
-
-  btnToSignOut.addEventListener('click', () => {
-    auth.signOut();
-  });
-});
