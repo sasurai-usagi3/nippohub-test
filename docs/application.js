@@ -1,13 +1,8 @@
-const auth = firebase.auth();
-const database = firebase.database();
-const ui = new firebaseui.auth.AuthUI(auth);
-const normalizeDateElm = x => `0${x}`.slice(-2);
-const queryStr = location.search.slice(1);
-const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
-const paramDate = (queries.find(x => x[0] === 'date') || [])[1];
-const currentDate = (paramDate != null) ? new Date(paramDate) : new Date();
-
 window.addEventListener('load', () => {
+  const auth = firebase.auth();
+  const database = firebase.database();
+  const ui = new firebaseui.auth.AuthUI(auth);
+  const normalizeDateElm = x => `0${x}`.slice(-2);
   const titleDate = new Vue({
     el: '#js-title-date',
     data: {
@@ -45,13 +40,40 @@ window.addEventListener('load', () => {
       }
     }
   });
+  const listMemo = new Vue({
+    el: '#js-list-memo',
+    data: {
+      memos: []
+    }
+  });
   const pageAuth = document.getElementById('js-page-auth');
   const pageMain = document.getElementById('js-page-main');
   const btnToSignOut = document.getElementById('js-sign-out');
   const summaryArea = document.getElementById('js-summary-area');
   const summaryBtn = document.getElementById('js-summary-btn');
+  const queryStr = location.search.slice(1);
+  const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
+  const paramDate = (queries.find(x => x[0] === 'date') || [])[1];
+  const currentDate = (paramDate != null) ? new Date(paramDate) : new Date();
   const previousDay = new Date(currentDate.getTime() - 24 * 3600 * 1000);
   const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
+  const beginningOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
+  const endOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59, 999);
+  const init = userId => {
+    database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
+      const data = r.val();
+
+      listMemo.memos = [];
+
+      for(let v in data) {
+        const createdAt = new Date(data[v].timestamp);
+        const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
+        const contents = data[v].contents;
+
+        listMemo.memos.push({contents: contents, createdAt: createdAtStr});
+      }
+    });
+  };
 
   titleDate.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`;
   linkPreviousDay.url = `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
@@ -90,28 +112,3 @@ window.addEventListener('load', () => {
     }
   });
 });
-
-const init = (userId) => {
-  const listMemo = new Vue({
-    el: '#js-list-memo',
-    data: {
-      memos: []
-    }
-  });
-  const beginningOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
-  const endOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59, 999);
-
-  database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
-    const data = r.val();
-
-    listMemo.memos = [];
-
-    for(let v in data) {
-      const createdAt = new Date(data[v].timestamp);
-      const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
-      const contents = data[v].contents;
-
-      listMemo.memos.push({contents: contents, createdAt: createdAtStr});
-    }
-  });
-};
