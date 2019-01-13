@@ -103,6 +103,7 @@ window.addEventListener('load', () => {
     });
 
     summaryArea.value = contents;
+    modal.hidden = false;
   });
 
   auth.onAuthStateChanged(currentUser => {
