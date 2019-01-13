@@ -39,12 +39,9 @@
   </header>
   <div id="js-page-main" hidden>
     <div class="l-container">
-      <form id="js-form-memo" class="p-memo-form" @submit.prevent="submit">
-        <textarea id="js-content-text-field" class="p-text-field"></textarea>
-        <div class="u-text-align-right u-mt-10">
-          <button type="submit" class="p-btn">メモする</button>
-        </div>
-      </form>
+      <div id="js-memo-board">
+        <memo-form :user-id-to-send="userIdToSend"></memo-form>
+      </div>
       <h2 class="p-list-title"><span id="js-title-date">{{ date }}</span>の日報</h2>
       <ul id="js-list-memo" class="p-memo-list">
         <li v-for="memo in memos">{{ memo.createdAt }} &gt; <span class="js-memo-contents">{{ memo.contents }}</li>
@@ -70,5 +67,13 @@
   <div id="js-page-auth">
     <div id="js-form-auth-area"></div>
   </div>
+  <template id="js-template-form-memo">
+    <form id="js-form-memo" class="p-memo-form" @submit.prevent="submit">
+      <textarea id="js-content-text-field" class="p-text-field"></textarea>
+      <div class="u-text-align-right u-mt-10">
+        <button type="submit" class="p-btn">メモする</button>
+      </div>
+    </form>
+  </template>
 </body>
 </html>

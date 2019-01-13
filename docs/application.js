@@ -3,6 +3,23 @@ window.addEventListener('load', () => {
   const database = firebase.database();
   const ui = new firebaseui.auth.AuthUI(auth);
   const normalizeDateElm = x => `0${x}`.slice(-2);
+  Vue.component('memo-form', {
+    template: document.getElementById('js-template-form-memo'),
+    props: ['userIdToSend'],
+    methods: {
+      submit: function() {
+        const memoTextField = document.getElementById('js-content-text-field');
+        const userId = this.userIdToSend;
+
+        database.ref(`users/${userId}/memos`).push({
+          contents: memoTextField.value,
+          userId: userId,
+          timestamp: Date.now()
+        });
+        memoTextField.value = '';
+      }
+    }
+  });
   const titleDate = new Vue({
     el: '#js-title-date',
     data: {
@@ -21,23 +38,10 @@ window.addEventListener('load', () => {
       url: '#'
     }
   });
-  const form = new Vue({
-    el: '#js-form-memo',
+  const memoBoard = new Vue({
+    el: '#js-memo-board',
     data: {
       userIdToSend: null
-    },
-    methods: {
-      submit: function() {
-        const memoTextField = document.getElementById('js-content-text-field');
-        const userId = this.userIdToSend;
-
-        database.ref(`users/${userId}/memos`).push({
-          contents: memoTextField.value,
-          userId: userId,
-          timestamp: Date.now()
-        });
-        memoTextField.value = '';
-      }
     }
   });
   const listMemo = new Vue({
@@ -111,7 +115,8 @@ window.addEventListener('load', () => {
       pageAuth.setAttribute('hidden', 'hidden');
       pageMain.removeAttribute('hidden');
       init(currentUser.uid);
-      form.userIdToSend = currentUser.uid;
+      //form.userIdToSend = currentUser.uid;
+      memoBoard.userIdToSend = currentUser.uid;
     } else {
       ui.start('#js-form-auth-area', {
         signInSuccessUrl: '/',
