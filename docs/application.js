@@ -46,6 +46,17 @@ window.addEventListener('load', () => {
       memos: []
     }
   });
+  const modal = new Vue({
+    el: '#js-modal',
+    data: {
+      hidden: true
+    },
+    methods: {
+      close: function() {
+        this.hidden = true;
+      }
+    }
+  });
   const pageAuth = document.getElementById('js-page-auth');
   const pageMain = document.getElementById('js-page-main');
   const btnToSignOut = document.getElementById('js-sign-out');
@@ -92,6 +103,7 @@ window.addEventListener('load', () => {
     });
 
     summaryArea.value = contents;
+    modal.hidden = false;
   });
 
   auth.onAuthStateChanged(currentUser => {
