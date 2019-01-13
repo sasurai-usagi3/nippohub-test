@@ -59,8 +59,8 @@
         <a id="js-link-next-day" :href="url">明日</a>
       </div>
     </div>
-    <div id="js-modal" class="p-modal">
-      <div class="p-modal__background js-elm-to-close-modal"></div>
+    <div id="js-modal" class="p-modal" :hidden="hidden">
+      <div class="p-modal__background" @click="close"></div>
       <div class="p-modal__box">
         <span>まとめた結果</span>
         <textarea id="js-summary-area" class="p-text-field u-mt-10" readonly></textarea>
