@@ -24,24 +24,35 @@ window.addEventListener('load', () => {
     template: document.getElementById('js-template-memo-list').innerHTML,
     props: ['memos']
   });
-  const linkPreviousDay = new Vue({
-    el: '#js-link-previous-day',
-    data: {
-      url: '#'
-    }
-  });
-  const linkNextDay = new Vue({
-    el: '#js-link-next-day',
-    data: {
-      url: '#'
-    }
-  });
   const memoBoard = new Vue({
     el: '#js-memo-board',
     data: {
       userIdToSend: null,
-      date: '',
+      date: null,
       memos: []
+    },
+    computed: {
+      dateStr: function() {
+        return (this.date != null) ? `${this.date.getFullYear()}-${normalizeDateElm(this.date.getMonth() + 1)}-${normalizeDateElm(this.date.getDate())}` : 'xxxx-xx-xx';
+      },
+      previousDateUrl: function() {
+        if(this.date == null) {
+          return '#';
+        }
+
+        const previousDay = new Date(this.date.getTime() - 24 * 3600 * 1000);
+
+        return `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
+      },
+      nextDateUrl: function() {
+        if(this.date == null) {
+          return '#';
+        }
+
+        const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
+
+        return `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
+      }
     }
   });
   const modal = new Vue({
@@ -64,8 +75,6 @@ window.addEventListener('load', () => {
   const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
   const paramDate = (queries.find(x => x[0] === 'date') || [])[1];
   const currentDate = (paramDate != null) ? new Date(paramDate) : new Date();
-  const previousDay = new Date(currentDate.getTime() - 24 * 3600 * 1000);
-  const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
   const beginningOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
   const endOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59, 999);
   const init = userId => {
@@ -84,9 +93,7 @@ window.addEventListener('load', () => {
     });
   };
 
-  memoBoard.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`;
-  linkPreviousDay.url = `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
-  linkNextDay.url = `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
+  memoBoard.date = currentDate;
 
   btnToSignOut.addEventListener('click', () => {
     auth.signOut();

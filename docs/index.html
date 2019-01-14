@@ -41,17 +41,17 @@
     <div class="l-container">
       <div id="js-memo-board">
         <memo-form :user-id-to-send="userIdToSend"></memo-form>
-        <h2 class="p-list-title">{{ date }}の日報</h2>
+        <h2 class="p-list-title">{{ dateStr }}の日報</h2>
         <memo-list :memos="memos"></memo-list>
-      </div>
-      <div class="u-mt-20">
-        <div class="u-text-align-right u-mt-10">
-          <button type="button" id="js-summary-btn" class="p-btn">まとめる</button>
+        <div class="u-mt-20">
+          <div class="u-text-align-right u-mt-10">
+            <button type="button" id="js-summary-btn" class="p-btn">まとめる</button>
+          </div>
         </div>
-      </div>
-      <div>
-        <a id="js-link-previous-day" :href="url">前日</a>
-        <a id="js-link-next-day" :href="url">明日</a>
+        <div>
+          <a :href="previousDateUrl">前日</a>
+          <a id="js-link-next-day" :href="nextDateUrl">明日</a>
+        </div>
       </div>
     </div>
     <div id="js-modal" class="p-modal" :hidden="hidden">
