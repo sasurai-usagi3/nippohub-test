@@ -20,11 +20,9 @@ window.addEventListener('load', () => {
       }
     }
   });
-  const titleDate = new Vue({
-    el: '#js-title-date',
-    data: {
-      date: ''
-    }
+  Vue.component('memo-list', {
+    template: document.getElementById('js-template-memo-list').innerHTML,
+    props: ['memos']
   });
   const linkPreviousDay = new Vue({
     el: '#js-link-previous-day',
@@ -41,12 +39,8 @@ window.addEventListener('load', () => {
   const memoBoard = new Vue({
     el: '#js-memo-board',
     data: {
-      userIdToSend: null
-    }
-  });
-  const listMemo = new Vue({
-    el: '#js-list-memo',
-    data: {
+      userIdToSend: null,
+      date: '',
       memos: []
     }
   });
@@ -78,19 +72,19 @@ window.addEventListener('load', () => {
     database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
       const data = r.val();
 
-      listMemo.memos = [];
+      memoBoard.memos = [];
 
       for(let v in data) {
         const createdAt = new Date(data[v].timestamp);
         const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
         const contents = data[v].contents;
 
-        listMemo.memos.push({contents: contents, createdAt: createdAtStr});
+        memoBoard.memos.push({contents: contents, createdAt: createdAtStr});
       }
     });
   };
 
-  titleDate.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`;
+  memoBoard.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`;
   linkPreviousDay.url = `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
   linkNextDay.url = `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
 
