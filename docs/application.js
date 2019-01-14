@@ -20,12 +20,6 @@ window.addEventListener('load', () => {
       }
     }
   });
-  const titleDate = new Vue({
-    el: '#js-title-date',
-    data: {
-      date: ''
-    }
-  });
   const linkPreviousDay = new Vue({
     el: '#js-link-previous-day',
     data: {
@@ -41,7 +35,8 @@ window.addEventListener('load', () => {
   const memoBoard = new Vue({
     el: '#js-memo-board',
     data: {
-      userIdToSend: null
+      userIdToSend: null,
+      date: ''
     }
   });
   const listMemo = new Vue({
@@ -90,7 +85,7 @@ window.addEventListener('load', () => {
     });
   };
 
-  titleDate.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`;
+  memoBoard.date = `${currentDate.getFullYear()}-${normalizeDateElm(currentDate.getMonth() + 1)}-${normalizeDateElm(currentDate.getDate())}`;
   linkPreviousDay.url = `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
   linkNextDay.url = `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
 

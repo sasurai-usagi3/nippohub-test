@@ -41,8 +41,8 @@
     <div class="l-container">
       <div id="js-memo-board">
         <memo-form :user-id-to-send="userIdToSend"></memo-form>
+        <h2 class="p-list-title">{{ date }}の日報</h2>
       </div>
-      <h2 class="p-list-title"><span id="js-title-date">{{ date }}</span>の日報</h2>
       <ul id="js-list-memo" class="p-memo-list">
         <li v-for="memo in memos">{{ memo.createdAt }} &gt; <span class="js-memo-contents">{{ memo.contents }}</li>
       </ul>
