@@ -20,6 +20,10 @@ window.addEventListener('load', () => {
       }
     }
   });
+  Vue.component('memo-list', {
+    template: document.getElementById('js-template-memo-list').innerHTML,
+    props: ['memos']
+  });
   const linkPreviousDay = new Vue({
     el: '#js-link-previous-day',
     data: {
@@ -36,12 +40,7 @@ window.addEventListener('load', () => {
     el: '#js-memo-board',
     data: {
       userIdToSend: null,
-      date: ''
-    }
-  });
-  const listMemo = new Vue({
-    el: '#js-list-memo',
-    data: {
+      date: '',
       memos: []
     }
   });
@@ -73,14 +72,14 @@ window.addEventListener('load', () => {
     database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
       const data = r.val();
 
-      listMemo.memos = [];
+      memoBoard.memos = [];
 
       for(let v in data) {
         const createdAt = new Date(data[v].timestamp);
         const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
         const contents = data[v].contents;
 
-        listMemo.memos.push({contents: contents, createdAt: createdAtStr});
+        memoBoard.memos.push({contents: contents, createdAt: createdAtStr});
       }
     });
   };
