@@ -54,16 +54,16 @@
         </div>
       </div>
     </div>
-    <div id="js-modal" class="p-modal" :hidden="hidden">
-      <div class="p-modal__background" @click="close"></div>
-      <div class="p-modal__box">
-        <span>まとめた結果</span>
-        <textarea id="js-summary-area" class="p-text-field u-mt-10" readonly></textarea>
-      </div>
-    </div>
   </div>
   <div id="js-page-auth">
     <div id="js-form-auth-area"></div>
+  </div>
+  <div id="js-modal" class="p-modal" :hidden="hidden">
+    <div class="p-modal__background" @click="close"></div>
+    <div class="p-modal__box">
+      <span>まとめた結果</span>
+      <textarea id="js-summary-area" class="p-text-field u-mt-10" readonly></textarea>
+    </div>
   </div>
   <template id="js-template-form-memo">
     <form id="js-form-memo" class="p-memo-form" @submit.prevent="submit">
