@@ -24,12 +24,22 @@ window.addEventListener('load', () => {
     template: document.getElementById('js-template-memo-list').innerHTML,
     props: ['memos']
   });
-  const memoBoard = new Vue({
-    el: '#js-memo-board',
+  Vue.component('memo-page', {
+    template: document.getElementById('js-template-memo-page'),
+    prop: ['hidden']
+  });
+  Vue.component('auth-page', {
+    template: document.getElementById('js-template-auth-page'),
+    prop: ['hidden']
+  });
+  const pageContainer = new Vue({
+    el: '#js-page-container',
     data: {
       userIdToSend: null,
       date: null,
-      memos: []
+      memos: [],
+      hiddenMemo: false,
+      hiddenAuth: true
     },
     computed: {
       dateStr: function() {
@@ -81,19 +91,19 @@ window.addEventListener('load', () => {
     database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
       const data = r.val();
 
-      memoBoard.memos = [];
+      pageContainer.memos = [];
 
       for(let v in data) {
         const createdAt = new Date(data[v].timestamp);
         const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
         const contents = data[v].contents;
 
-        memoBoard.memos.push({contents: contents, createdAt: createdAtStr});
+        pageContainer.memos.push({contents: contents, createdAt: createdAtStr});
       }
     });
   };
 
-  memoBoard.date = currentDate;
+  pageContainer.date = currentDate;
 
   btnToSignOut.addEventListener('click', () => {
     auth.signOut();
@@ -116,8 +126,7 @@ window.addEventListener('load', () => {
       pageAuth.setAttribute('hidden', 'hidden');
       pageMain.removeAttribute('hidden');
       init(currentUser.uid);
-      //form.userIdToSend = currentUser.uid;
-      memoBoard.userIdToSend = currentUser.uid;
+      pageContainer.userIdToSend = currentUser.uid;
     } else {
       ui.start('#js-form-auth-area', {
         signInSuccessUrl: '/',
