@@ -26,21 +26,7 @@ window.addEventListener('load', () => {
   });
   Vue.component('memo-page', {
     template: document.getElementById('js-template-memo-page'),
-    prop: ['hidden']
-  });
-  Vue.component('auth-page', {
-    template: document.getElementById('js-template-auth-page'),
-    prop: ['hidden']
-  });
-  const pageContainer = new Vue({
-    el: '#js-page-container',
-    data: {
-      userIdToSend: null,
-      date: null,
-      memos: [],
-      hiddenMemo: false,
-      hiddenAuth: true
-    },
+    props: ['hidden', 'date'],
     computed: {
       dateStr: function() {
         return (this.date != null) ? `${this.date.getFullYear()}-${normalizeDateElm(this.date.getMonth() + 1)}-${normalizeDateElm(this.date.getDate())}` : 'xxxx-xx-xx';
@@ -64,6 +50,20 @@ window.addEventListener('load', () => {
         return `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
       }
     }
+  });
+  Vue.component('auth-page', {
+    template: document.getElementById('js-template-auth-page'),
+    props: ['hidden']
+  });
+  const pageContainer = new Vue({
+    el: '#js-page-container',
+    data: {
+      userIdToSend: null,
+      date: null,
+      memos: [],
+      hiddenMemo: false,
+      hiddenAuth: true,
+    },
   });
   const modal = new Vue({
     el: '#js-modal',
@@ -109,6 +109,7 @@ window.addEventListener('load', () => {
     auth.signOut();
   });
 
+/*
   summaryBtn.addEventListener('click', () => {
     const contentsDOM = document.querySelectorAll('.js-memo-contents');
     let contents = '';
@@ -120,11 +121,12 @@ window.addEventListener('load', () => {
     summaryArea.value = contents;
     modal.hidden = false;
   });
+*/
 
   auth.onAuthStateChanged(currentUser => {
     if(currentUser != null) {
-      pageAuth.setAttribute('hidden', 'hidden');
-      pageMain.removeAttribute('hidden');
+      //pageAuth.setAttribute('hidden', 'hidden');
+      //pageMain.removeAttribute('hidden');
       init(currentUser.uid);
       pageContainer.userIdToSend = currentUser.uid;
     } else {
