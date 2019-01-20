@@ -13,6 +13,7 @@
   <meta name="twitter:title" content="NippoHub 分報">
   <meta name="twitter:description" content="分報サービス">
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.7.1/firebase.js"></script>
   <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
   <script>
@@ -38,8 +39,13 @@
     </div>
   </header>
   <div id="js-page-container">
-    <memo-page :hidden="hiddenMemo" :current-user-id="currentUserId" :memos="memos" :date="date"></memo-page>
-    <auth-page :hidden="hiddenAuth"></auth-page>
+    <!--
+    <div>
+      <router-link to="/">top</router-link>
+      <router-link to="/sign_in">sign in</router-link>
+    </div>
+    -->
+    <router-view :date="date" :current-user-id="currentUserId" :memos="memos"></router-view>
   </div>
   <div id="js-modal" class="p-modal" :hidden="hidden">
     <div class="p-modal__background" @click="close"></div>
@@ -62,7 +68,7 @@
     </ul>
   </template>
   <template id="js-template-memo-page">
-    <div class="l-container" :hidden="hidden">
+    <div class="l-container">
       <memo-form :current-user-id="currentUserId"></memo-form>
       <h2 class="p-list-title">{{ dateStr }}の日報</h2>
       <memo-list :memos="memos"></memo-list>
@@ -78,7 +84,7 @@
     </div>
   </template>
   <template id="js-template-auth-page">
-    <div :hidden="hidden">
+    <div>
       <div id="js-form-auth-area"></div>
     </div>
   </template>
