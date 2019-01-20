@@ -5,11 +5,11 @@ window.addEventListener('load', () => {
   const normalizeDateElm = x => `0${x}`.slice(-2);
   Vue.component('memo-form', {
     template: document.getElementById('js-template-form-memo'),
-    props: ['userIdToSend'],
+    props: ['currentUserId'],
     methods: {
       submit: function() {
         const memoTextField = document.getElementById('js-content-text-field');
-        const userId = this.userIdToSend;
+        const userId = this.currentUserId;
 
         database.ref(`users/${userId}/memos`).push({
           contents: memoTextField.value,
@@ -26,7 +26,7 @@ window.addEventListener('load', () => {
   });
   Vue.component('memo-page', {
     template: document.getElementById('js-template-memo-page'),
-    props: ['hidden', 'date'],
+    props: ['currentUserId', 'hidden', 'date', 'memos'],
     computed: {
       dateStr: function() {
         return (this.date != null) ? `${this.date.getFullYear()}-${normalizeDateElm(this.date.getMonth() + 1)}-${normalizeDateElm(this.date.getDate())}` : 'xxxx-xx-xx';
@@ -58,7 +58,7 @@ window.addEventListener('load', () => {
   const pageContainer = new Vue({
     el: '#js-page-container',
     data: {
-      userIdToSend: null,
+      currentUserId: null,
       date: null,
       memos: [],
       hiddenMemo: false,
@@ -76,8 +76,6 @@ window.addEventListener('load', () => {
       }
     }
   });
-  const pageAuth = document.getElementById('js-page-auth');
-  const pageMain = document.getElementById('js-page-main');
   const btnToSignOut = document.getElementById('js-sign-out');
   const summaryArea = document.getElementById('js-summary-area');
   const summaryBtn = document.getElementById('js-summary-btn');
@@ -109,7 +107,6 @@ window.addEventListener('load', () => {
     auth.signOut();
   });
 
-/*
   summaryBtn.addEventListener('click', () => {
     const contentsDOM = document.querySelectorAll('.js-memo-contents');
     let contents = '';
@@ -121,14 +118,11 @@ window.addEventListener('load', () => {
     summaryArea.value = contents;
     modal.hidden = false;
   });
-*/
 
   auth.onAuthStateChanged(currentUser => {
     if(currentUser != null) {
-      //pageAuth.setAttribute('hidden', 'hidden');
-      //pageMain.removeAttribute('hidden');
       init(currentUser.uid);
-      pageContainer.userIdToSend = currentUser.uid;
+      pageContainer.currentUserId = currentUser.uid;
     } else {
       ui.start('#js-form-auth-area', {
         signInSuccessUrl: '/',
