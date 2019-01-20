@@ -1,8 +1,15 @@
+Vue.use(VueRouter);
+
 window.addEventListener('load', () => {
   const auth = firebase.auth();
   const database = firebase.database();
   const ui = new firebaseui.auth.AuthUI(auth);
   const normalizeDateElm = x => `0${x}`.slice(-2);
+  const routes = [
+    {path: '/', component: {template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>', props: ['date', 'currentUserId', 'memos']}},
+    {path: '/sign_in', component: {template: '<auth-page></auth-page>'}}
+  ];
+  const router = new VueRouter({routes});
   Vue.component('memo-form', {
     template: document.getElementById('js-template-form-memo'),
     props: ['currentUserId'],
@@ -60,10 +67,9 @@ window.addEventListener('load', () => {
     data: {
       currentUserId: null,
       date: null,
-      memos: [],
-      hiddenMemo: false,
-      hiddenAuth: true,
+      memos: []
     },
+    router
   });
   const modal = new Vue({
     el: '#js-modal',
