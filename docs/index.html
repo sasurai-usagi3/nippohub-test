@@ -37,26 +37,9 @@
       <button id="js-sign-out" class="p-sign-out-link">サインアウト</button>
     </div>
   </header>
-  <div id="js-page-main" hidden>
-    <div class="l-container">
-      <div id="js-memo-board">
-        <memo-form :user-id-to-send="userIdToSend"></memo-form>
-        <h2 class="p-list-title">{{ dateStr }}の日報</h2>
-        <memo-list :memos="memos"></memo-list>
-        <div class="u-mt-20">
-          <div class="u-text-align-right u-mt-10">
-            <button type="button" id="js-summary-btn" class="p-btn">まとめる</button>
-          </div>
-        </div>
-        <div>
-          <a :href="previousDateUrl">前日</a>
-          <a id="js-link-next-day" :href="nextDateUrl">明日</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div id="js-page-auth">
-    <div id="js-form-auth-area"></div>
+  <div id="js-page-container">
+    <memo-page :hidden="hiddenMemo" :current-user-id="currentUserId" :memos="memos" :date="date"></memo-page>
+    <auth-page :hidden="hiddenAuth"></auth-page>
   </div>
   <div id="js-modal" class="p-modal" :hidden="hidden">
     <div class="p-modal__background" @click="close"></div>
@@ -77,6 +60,27 @@
     <ul class="p-memo-list">
       <li v-for="memo in memos">{{ memo.createdAt }} &gt; <span class="js-memo-contents">{{ memo.contents }}</li>
     </ul>
+  </template>
+  <template id="js-template-memo-page">
+    <div class="l-container" :hidden="hidden">
+      <memo-form :current-user-id="currentUserId"></memo-form>
+      <h2 class="p-list-title">{{ dateStr }}の日報</h2>
+      <memo-list :memos="memos"></memo-list>
+      <div class="u-mt-20">
+        <div class="u-text-align-right u-mt-10">
+          <button type="button" id="js-summary-btn" class="p-btn">まとめる</button>
+        </div>
+      </div>
+      <div>
+        <a :href="previousDateUrl">前日</a>
+        <a id="js-link-next-day" :href="nextDateUrl">明日</a>
+      </div>
+    </div>
+  </template>
+  <template id="js-template-auth-page">
+    <div :hidden="hidden">
+      <div id="js-form-auth-area"></div>
+    </div>
   </template>
 </body>
 </html>

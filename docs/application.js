@@ -5,11 +5,11 @@ window.addEventListener('load', () => {
   const normalizeDateElm = x => `0${x}`.slice(-2);
   Vue.component('memo-form', {
     template: document.getElementById('js-template-form-memo'),
-    props: ['userIdToSend'],
+    props: ['currentUserId'],
     methods: {
       submit: function() {
         const memoTextField = document.getElementById('js-content-text-field');
-        const userId = this.userIdToSend;
+        const userId = this.currentUserId;
 
         database.ref(`users/${userId}/memos`).push({
           contents: memoTextField.value,
@@ -24,13 +24,9 @@ window.addEventListener('load', () => {
     template: document.getElementById('js-template-memo-list').innerHTML,
     props: ['memos']
   });
-  const memoBoard = new Vue({
-    el: '#js-memo-board',
-    data: {
-      userIdToSend: null,
-      date: null,
-      memos: []
-    },
+  Vue.component('memo-page', {
+    template: document.getElementById('js-template-memo-page'),
+    props: ['currentUserId', 'hidden', 'date', 'memos'],
     computed: {
       dateStr: function() {
         return (this.date != null) ? `${this.date.getFullYear()}-${normalizeDateElm(this.date.getMonth() + 1)}-${normalizeDateElm(this.date.getDate())}` : 'xxxx-xx-xx';
@@ -55,6 +51,20 @@ window.addEventListener('load', () => {
       }
     }
   });
+  Vue.component('auth-page', {
+    template: document.getElementById('js-template-auth-page'),
+    props: ['hidden']
+  });
+  const pageContainer = new Vue({
+    el: '#js-page-container',
+    data: {
+      currentUserId: null,
+      date: null,
+      memos: [],
+      hiddenMemo: false,
+      hiddenAuth: true,
+    },
+  });
   const modal = new Vue({
     el: '#js-modal',
     data: {
@@ -66,8 +76,6 @@ window.addEventListener('load', () => {
       }
     }
   });
-  const pageAuth = document.getElementById('js-page-auth');
-  const pageMain = document.getElementById('js-page-main');
   const btnToSignOut = document.getElementById('js-sign-out');
   const summaryArea = document.getElementById('js-summary-area');
   const summaryBtn = document.getElementById('js-summary-btn');
@@ -81,19 +89,19 @@ window.addEventListener('load', () => {
     database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
       const data = r.val();
 
-      memoBoard.memos = [];
+      pageContainer.memos = [];
 
       for(let v in data) {
         const createdAt = new Date(data[v].timestamp);
         const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
         const contents = data[v].contents;
 
-        memoBoard.memos.push({contents: contents, createdAt: createdAtStr});
+        pageContainer.memos.push({contents: contents, createdAt: createdAtStr});
       }
     });
   };
 
-  memoBoard.date = currentDate;
+  pageContainer.date = currentDate;
 
   btnToSignOut.addEventListener('click', () => {
     auth.signOut();
@@ -113,11 +121,8 @@ window.addEventListener('load', () => {
 
   auth.onAuthStateChanged(currentUser => {
     if(currentUser != null) {
-      pageAuth.setAttribute('hidden', 'hidden');
-      pageMain.removeAttribute('hidden');
       init(currentUser.uid);
-      //form.userIdToSend = currentUser.uid;
-      memoBoard.userIdToSend = currentUser.uid;
+      pageContainer.currentUserId = currentUser.uid;
     } else {
       ui.start('#js-form-auth-area', {
         signInSuccessUrl: '/',
