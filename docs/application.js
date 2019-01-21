@@ -60,7 +60,15 @@ window.addEventListener('load', () => {
   });
   Vue.component('auth-page', {
     template: document.getElementById('js-template-auth-page'),
-    props: ['hidden']
+    props: ['hidden'],
+    mounted: function() {
+      ui.start('#js-form-auth-area', {
+        signInSuccessUrl: '/',
+        signInOptions: [
+          firebase.auth.EmailAuthProvider.PROVIDER_ID
+        ]
+      });
+    }
   });
   const pageContainer = new Vue({
     el: '#js-page-container',
@@ -113,6 +121,16 @@ window.addEventListener('load', () => {
     auth.signOut();
   });
 
+  auth.onAuthStateChanged(currentUser => {
+    if(currentUser != null) {
+      init(currentUser.uid);
+      pageContainer.currentUserId = currentUser.uid;
+    } else {
+      return;
+    }
+  });
+
+  // TODO: summaryBtnが存在しない時の処理を追加する
   summaryBtn.addEventListener('click', () => {
     const contentsDOM = document.querySelectorAll('.js-memo-contents');
     let contents = '';
@@ -123,21 +141,5 @@ window.addEventListener('load', () => {
 
     summaryArea.value = contents;
     modal.hidden = false;
-  });
-
-  auth.onAuthStateChanged(currentUser => {
-    if(currentUser != null) {
-      init(currentUser.uid);
-      pageContainer.currentUserId = currentUser.uid;
-    } else {
-      ui.start('#js-form-auth-area', {
-        signInSuccessUrl: '/',
-        signInOptions: [
-          firebase.auth.EmailAuthProvider.PROVIDER_ID
-        ]
-      });
-
-      return;
-    }
   });
 });
