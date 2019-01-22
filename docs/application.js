@@ -104,6 +104,7 @@ window.addEventListener('load', () => {
       }
     }
   });
+  const currentPath = router.currentRoute.path;
   const btnToSignOut = document.getElementById('js-sign-out');
   const queryStr = location.search.slice(1);
   const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
@@ -137,8 +138,13 @@ window.addEventListener('load', () => {
     if(currentUser != null) {
       init(currentUser.uid);
       pageContainer.currentUserId = currentUser.uid;
+      if(currentPath === '/sign_in') {
+        router.push('/');
+      }
     } else {
-      return;
+      if(currentPath === '/') {
+        router.push('/sign_in');
+      }
     }
   });
 });
