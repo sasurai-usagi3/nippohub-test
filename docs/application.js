@@ -56,6 +56,20 @@ window.addEventListener('load', () => {
 
         return `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
       }
+    },
+    methods: {
+      summaryMemos: function() {
+        const contentsDOM = document.querySelectorAll('.js-memo-contents');
+        const summaryArea = document.getElementById('js-summary-area');
+        let contents = '';
+
+        contentsDOM.forEach(x => {
+          contents += `${x.textContent}\n`;
+        });
+
+        summaryArea.value = contents;
+        modal.hidden = false;
+      }
     }
   });
   Vue.component('auth-page', {
@@ -91,8 +105,6 @@ window.addEventListener('load', () => {
     }
   });
   const btnToSignOut = document.getElementById('js-sign-out');
-  const summaryArea = document.getElementById('js-summary-area');
-  const summaryBtn = document.getElementById('js-summary-btn');
   const queryStr = location.search.slice(1);
   const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
   const paramDate = (queries.find(x => x[0] === 'date') || [])[1];
@@ -128,18 +140,5 @@ window.addEventListener('load', () => {
     } else {
       return;
     }
-  });
-
-  // TODO: summaryBtnが存在しない時の処理を追加する
-  summaryBtn.addEventListener('click', () => {
-    const contentsDOM = document.querySelectorAll('.js-memo-contents');
-    let contents = '';
-
-    contentsDOM.forEach(x => {
-      contents += `${x.textContent}\n`;
-    });
-
-    summaryArea.value = contents;
-    modal.hidden = false;
   });
 });
