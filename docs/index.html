@@ -55,7 +55,7 @@
     </div>
   </div>
   <template id="js-template-form-memo">
-    <form id="js-form-memo" class="p-memo-form" @submit.prevent="submit">
+    <form id="js-form-memo" class="p-memo-form" @submit.prevent="submit" :hidden="hidden">
       <textarea id="js-content-text-field" class="p-text-field"></textarea>
       <div class="u-text-align-right u-mt-10">
         <button type="submit" class="p-btn">メモする</button>
@@ -69,7 +69,7 @@
   </template>
   <template id="js-template-memo-page">
     <div class="l-container">
-      <memo-form :current-user-id="currentUserId"></memo-form>
+      <memo-form :current-user-id="currentUserId" :hidden="!isToday"></memo-form>
       <h2 class="p-list-title">{{ dateStr }}の日報</h2>
       <memo-list :memos="memos"></memo-list>
       <div class="u-mt-20">

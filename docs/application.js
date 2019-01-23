@@ -12,7 +12,7 @@ window.addEventListener('load', () => {
   const router = new VueRouter({routes});
   Vue.component('memo-form', {
     template: document.getElementById('js-template-form-memo'),
-    props: ['currentUserId'],
+    props: ['currentUserId', 'hidden'],
     methods: {
       submit: function() {
         const memoTextField = document.getElementById('js-content-text-field');
@@ -55,6 +55,12 @@ window.addEventListener('load', () => {
         const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
 
         return `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
+      },
+      isToday: function() {
+        const today = new Date();
+        const date = this.date;
+
+        return date != null && date.getYear() === today.getYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate();
       }
     },
     methods: {
