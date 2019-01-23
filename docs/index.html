@@ -13,6 +13,7 @@
   <meta name="twitter:title" content="NippoHub 分報">
   <meta name="twitter:description" content="分報サービス">
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.7.1/firebase.js"></script>
   <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
   <script>
@@ -37,38 +38,55 @@
       <button id="js-sign-out" class="p-sign-out-link">サインアウト</button>
     </div>
   </header>
-  <div id="js-page-main" hidden>
+  <div id="js-page-container">
+    <!--
+    <div>
+      <router-link to="/">top</router-link>
+      <router-link to="/sign_in">sign in</router-link>
+    </div>
+    -->
+    <router-view :date="date" :current-user-id="currentUserId" :memos="memos"></router-view>
+  </div>
+  <div id="js-modal" class="p-modal" :hidden="hidden">
+    <div class="p-modal__background" @click="close"></div>
+    <div class="p-modal__box">
+      <span>まとめた結果</span>
+      <textarea id="js-summary-area" class="p-text-field u-mt-10" readonly></textarea>
+    </div>
+  </div>
+  <template id="js-template-form-memo">
+    <form id="js-form-memo" class="p-memo-form" @submit.prevent="submit" :hidden="hidden">
+      <textarea id="js-content-text-field" class="p-text-field"></textarea>
+      <div class="u-text-align-right u-mt-10">
+        <button type="submit" class="p-btn">メモする</button>
+      </div>
+    </form>
+  </template>
+  <template id="js-template-memo-list">
+    <ul class="p-memo-list">
+      <li v-for="memo in memos">{{ memo.createdAt }} &gt; <span class="js-memo-contents">{{ memo.contents }}</li>
+    </ul>
+  </template>
+  <template id="js-template-memo-page">
     <div class="l-container">
-      <form id="js-form-memo" class="p-memo-form" @submit.prevent="submit">
-        <textarea id="js-content-text-field" class="p-text-field"></textarea>
-        <div class="u-text-align-right u-mt-10">
-          <button type="submit" class="p-btn">メモする</button>
-        </div>
-      </form>
-      <h2 class="p-list-title"><span id="js-title-date">{{ date }}</span>の日報</h2>
-      <ul id="js-list-memo" class="p-memo-list">
-        <li v-for="memo in memos">{{ memo.createdAt }} &gt; <span class="js-memo-contents">{{ memo.contents }}</li>
-      </ul>
+      <memo-form :current-user-id="currentUserId" :hidden="!isToday"></memo-form>
+      <h2 class="p-list-title">{{ dateStr }}の日報</h2>
+      <memo-list :memos="memos"></memo-list>
       <div class="u-mt-20">
         <div class="u-text-align-right u-mt-10">
-          <button type="button" id="js-summary-btn" class="p-btn">まとめる</button>
+          <button type="button" id="js-summary-btn" class="p-btn" @click="summaryMemos">まとめる</button>
         </div>
       </div>
       <div>
-        <a id="js-link-previous-day" :href="url">前日</a>
-        <a id="js-link-next-day" :href="url">明日</a>
+        <a :href="previousDateUrl">前日</a>
+        <a id="js-link-next-day" :href="nextDateUrl">明日</a>
       </div>
     </div>
-    <div id="js-modal" class="p-modal" :hidden="hidden">
-      <div class="p-modal__background" @click="close"></div>
-      <div class="p-modal__box">
-        <span>まとめた結果</span>
-        <textarea id="js-summary-area" class="p-text-field u-mt-10" readonly></textarea>
-      </div>
+  </template>
+  <template id="js-template-auth-page">
+    <div>
+      <div id="js-form-auth-area"></div>
     </div>
-  </div>
-  <div id="js-page-auth">
-    <div id="js-form-auth-area"></div>
-  </div>
+  </template>
 </body>
 </html>
