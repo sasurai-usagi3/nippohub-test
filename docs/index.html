@@ -39,12 +39,6 @@
     </div>
   </header>
   <div id="js-page-container">
-    <!--
-    <div>
-      <router-link to="/">top</router-link>
-      <router-link to="/sign_in">sign in</router-link>
-    </div>
-    -->
     <router-view :date="date" :current-user-id="currentUserId" :memos="memos"></router-view>
   </div>
   <div id="js-modal" class="p-modal" :hidden="hidden">
