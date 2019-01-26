@@ -6,7 +6,19 @@ window.addEventListener('load', () => {
   const ui = new firebaseui.auth.AuthUI(auth);
   const normalizeDateElm = x => `0${x}`.slice(-2);
   const routes = [
-    {path: '/', component: {template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>', props: ['date', 'currentUserId', 'memos']}},
+    {
+      path: '/',
+      component: {
+        template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>',
+        props: ['date', 'currentUserId', 'memos']
+      },
+      props: route => {
+        const currentDateStr = route.query.date;
+        const currentDate = (currentDateStr != null) ? new Date(currentDateStr) : new Date();
+
+        return {date: currentDate}
+      }
+    },
     {path: '/sign_in', component: {template: '<auth-page></auth-page>'}}
   ];
   const router = new VueRouter({routes});
@@ -40,21 +52,21 @@ window.addEventListener('load', () => {
       },
       previousDateUrl: function() {
         if(this.date == null) {
-          return '#';
+          return '/#/';
         }
 
         const previousDay = new Date(this.date.getTime() - 24 * 3600 * 1000);
 
-        return `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
+        return `/#/?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
       },
       nextDateUrl: function() {
         if(this.date == null) {
-          return '#';
+          return '/#/';
         }
 
-        const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
+        const nextDay = new Date(this.date.getTime() + 24 * 3600 * 1000);
 
-        return `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
+        return `/#/?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
       },
       isToday: function() {
         const today = new Date();

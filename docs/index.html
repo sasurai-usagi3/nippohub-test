@@ -39,7 +39,7 @@
     </div>
   </header>
   <div id="js-page-container">
-    <router-view :date="date" :current-user-id="currentUserId" :memos="memos"></router-view>
+    <router-view :current-user-id="currentUserId" :memos="memos"></router-view>
   </div>
   <div id="js-modal" class="p-modal" :hidden="hidden">
     <div class="p-modal__background" @click="close"></div>
