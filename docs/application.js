@@ -6,7 +6,19 @@ window.addEventListener('load', () => {
   const ui = new firebaseui.auth.AuthUI(auth);
   const normalizeDateElm = x => `0${x}`.slice(-2);
   const routes = [
-    {path: '/', component: {template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>', props: ['date', 'currentUserId', 'memos']}},
+    {
+      path: '/',
+      component: {
+        template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>',
+        props: ['date', 'currentUserId', 'memos']
+      },
+      props: route => {
+        const currentDateStr = route.query.date;
+        const currentDate = (currentDateStr != null) ? new Date(currentDateStr) : new Date();
+
+        return {date: currentDate}
+      }
+    },
     {path: '/sign_in', component: {template: '<auth-page></auth-page>'}}
   ];
   const router = new VueRouter({routes});
@@ -29,7 +41,31 @@ window.addEventListener('load', () => {
   });
   Vue.component('memo-list', {
     template: document.getElementById('js-template-memo-list').innerHTML,
-    props: ['memos']
+    data: function() {
+      return {memos: []}
+    },
+    props: ['date', 'currentUserId'],
+    watch: {
+      date: function() {
+        const beginningOfCurrentDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), 0, 0, 0);
+        const endOfCurrentDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), 23, 59, 59, 999);
+        database.ref(`users/${this.currentUserId}/memos`).off('value');
+        database.ref(`users/${this.currentUserId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
+          const data = r.val();
+          let memos = [];
+
+          for(let v in data) {
+            const createdAt = new Date(data[v].timestamp);
+            const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
+            const contents = data[v].contents;
+
+            memos.push({contents: contents, createdAt: createdAtStr});
+          }
+
+          this.memos = memos;
+        });
+      }
+    }
   });
   Vue.component('memo-page', {
     template: document.getElementById('js-template-memo-page'),
@@ -40,21 +76,21 @@ window.addEventListener('load', () => {
       },
       previousDateUrl: function() {
         if(this.date == null) {
-          return '#';
+          return '/#/';
         }
 
         const previousDay = new Date(this.date.getTime() - 24 * 3600 * 1000);
 
-        return `?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
+        return `/#/?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
       },
       nextDateUrl: function() {
         if(this.date == null) {
-          return '#';
+          return '/#/';
         }
 
-        const nextDay = new Date(currentDate.getTime() + 24 * 3600 * 1000);
+        const nextDay = new Date(this.date.getTime() + 24 * 3600 * 1000);
 
-        return `?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
+        return `/#/?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
       },
       isToday: function() {
         const today = new Date();
@@ -112,29 +148,6 @@ window.addEventListener('load', () => {
   });
   const currentPath = router.currentRoute.path;
   const btnToSignOut = document.getElementById('js-sign-out');
-  const queryStr = location.search.slice(1);
-  const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
-  const paramDate = (queries.find(x => x[0] === 'date') || [])[1];
-  const currentDate = (paramDate != null) ? new Date(paramDate) : new Date();
-  const beginningOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
-  const endOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59, 999);
-  const init = userId => {
-    database.ref(`users/${userId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
-      const data = r.val();
-
-      pageContainer.memos = [];
-
-      for(let v in data) {
-        const createdAt = new Date(data[v].timestamp);
-        const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
-        const contents = data[v].contents;
-
-        pageContainer.memos.push({contents: contents, createdAt: createdAtStr});
-      }
-    });
-  };
-
-  pageContainer.date = currentDate;
 
   btnToSignOut.addEventListener('click', () => {
     auth.signOut();
@@ -142,7 +155,6 @@ window.addEventListener('load', () => {
 
   auth.onAuthStateChanged(currentUser => {
     if(currentUser != null) {
-      init(currentUser.uid);
       pageContainer.currentUserId = currentUser.uid;
       if(currentPath === '/sign_in') {
         router.push('/');
