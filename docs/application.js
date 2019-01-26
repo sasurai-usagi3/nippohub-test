@@ -148,16 +148,6 @@ window.addEventListener('load', () => {
   });
   const currentPath = router.currentRoute.path;
   const btnToSignOut = document.getElementById('js-sign-out');
-  //const queryStr = location.search.slice(1);
-  //const queries = (queryStr.length != 0) ? queryStr.split('&').map(x => x.split('=')) : [];
-  //const paramDate = (queries.find(x => x[0] === 'date') || [])[1];
-  //const currentDate = (paramDate != null) ? new Date(paramDate) : new Date();
-  //const beginningOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
-  //const endOfCurrentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59, 999);
-  const init = userId => {
-  };
-
-  //pageContainer.date = currentDate;
 
   btnToSignOut.addEventListener('click', () => {
     auth.signOut();
@@ -165,7 +155,6 @@ window.addEventListener('load', () => {
 
   auth.onAuthStateChanged(currentUser => {
     if(currentUser != null) {
-      //init(currentUser.uid);
       pageContainer.currentUserId = currentUser.uid;
       if(currentPath === '/sign_in') {
         router.push('/');
