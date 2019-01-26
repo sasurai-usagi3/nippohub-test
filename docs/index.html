@@ -65,7 +65,7 @@
     <div class="l-container">
       <memo-form :current-user-id="currentUserId" :hidden="!isToday"></memo-form>
       <h2 class="p-list-title">{{ dateStr }}の日報</h2>
-      <memo-list :memos="memos"></memo-list>
+      <memo-list :date="date" :current-user-id="currentUserId"></memo-list>
       <div class="u-mt-20">
         <div class="u-text-align-right u-mt-10">
           <button type="button" id="js-summary-btn" class="p-btn" @click="summaryMemos">まとめる</button>
