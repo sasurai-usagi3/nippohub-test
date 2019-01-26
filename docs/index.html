@@ -39,13 +39,7 @@
     </div>
   </header>
   <div id="js-page-container">
-    <!--
-    <div>
-      <router-link to="/">top</router-link>
-      <router-link to="/sign_in">sign in</router-link>
-    </div>
-    -->
-    <router-view :date="date" :current-user-id="currentUserId" :memos="memos"></router-view>
+    <router-view :current-user-id="currentUserId" :memos="memos"></router-view>
   </div>
   <div id="js-modal" class="p-modal" :hidden="hidden">
     <div class="p-modal__background" @click="close"></div>
@@ -71,7 +65,7 @@
     <div class="l-container">
       <memo-form :current-user-id="currentUserId" :hidden="!isToday"></memo-form>
       <h2 class="p-list-title">{{ dateStr }}の日報</h2>
-      <memo-list :memos="memos"></memo-list>
+      <memo-list :date="date" :current-user-id="currentUserId"></memo-list>
       <div class="u-mt-20">
         <div class="u-text-align-right u-mt-10">
           <button type="button" id="js-summary-btn" class="p-btn" @click="summaryMemos">まとめる</button>
