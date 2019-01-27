@@ -19,7 +19,8 @@ window.addEventListener('load', () => {
         return {date: currentDate}
       }
     },
-    {path: '/sign_in', component: {template: '<auth-page></auth-page>'}}
+    {path: '/sign_in', component: {template: '<sign-in-page></sign-in-page>'}},
+    {path: '/sign_up', component: {template: '<sign-up-page></sign-up-page>'}}
   ];
   const router = new VueRouter({routes});
   Vue.component('memo-form', {
@@ -114,17 +115,42 @@ window.addEventListener('load', () => {
       }
     }
   });
-  Vue.component('auth-page', {
-    template: document.getElementById('js-template-auth-page'),
-    props: ['hidden'],
-    mounted: function() {
-      ui.start('#js-form-auth-area', {
-        signInSuccessUrl: '/',
-        signInOptions: [
-          firebase.auth.EmailAuthProvider.PROVIDER_ID
-        ]
-      });
+  Vue.component('sign-in-form', {
+    template: document.getElementById('js-template-auth'),
+    data: function() {
+      return {email: '', password: ''};
+    },
+    methods: {
+      signIn: function() {
+        auth.signInWithEmailAndPassword(this.email, this.password).catch(e => {
+          // TODO: auth/wrong-passwordの時の処理
+          // TODO: auth/user-not-foundの時の処理
+          console.log(e.code);
+          console.log(e.message);
+        });
+      }
     }
+  });
+  Vue.component('sign-up-form', {
+    template: document.getElementById('js-template-auth'),
+    data: function() {
+      return {email: '', password: ''};
+    },
+    methods: {
+      signIn: function() {
+        auth.createUserWithEmailAndPassword(this.email, this.password).catch(e => {
+          // TODO: auth/email-already-in-useの時の処理
+          console.log(e.code);
+          console.log(e.message);
+        });
+      }
+    }
+  });
+  Vue.component('sign-in-page', {
+    template: document.getElementById('js-template-sign-in-page')
+  });
+  Vue.component('sign-up-page', {
+    template: document.getElementById('js-template-sign-up-page')
   });
   const pageContainer = new Vue({
     el: '#js-page-container',
