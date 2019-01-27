@@ -19,7 +19,8 @@ window.addEventListener('load', () => {
         return {date: currentDate}
       }
     },
-    {path: '/sign_in', component: {template: '<auth-page></auth-page>'}}
+    {path: '/sign_in', component: {template: '<sign-in-page></sign-in-page>'}},
+    {path: '/sign_up', component: {template: '<sign-up-page></sign-up-page>'}}
   ];
   const router = new VueRouter({routes});
   Vue.component('memo-form', {
@@ -156,6 +157,12 @@ window.addEventListener('load', () => {
         });
       }
     }
+  });
+  Vue.component('sign-in-page', {
+    template: document.getElementById('js-template-sign-in-page')
+  });
+  Vue.component('sign-up-page', {
+    template: document.getElementById('js-template-sign-up-page')
   });
   const pageContainer = new Vue({
     el: '#js-page-container',
