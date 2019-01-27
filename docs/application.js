@@ -115,18 +115,6 @@ window.addEventListener('load', () => {
       }
     }
   });
-  Vue.component('auth-page', {
-    template: document.getElementById('js-template-auth-page'),
-    props: ['hidden'],
-    mounted: function() {
-      ui.start('#js-form-auth-area', {
-        signInSuccessUrl: '/',
-        signInOptions: [
-          firebase.auth.EmailAuthProvider.PROVIDER_ID
-        ]
-      });
-    }
-  });
   Vue.component('sign-in-form', {
     template: document.getElementById('js-template-auth'),
     data: function() {
