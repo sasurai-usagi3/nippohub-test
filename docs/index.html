@@ -82,5 +82,14 @@
       <div id="js-form-auth-area"></div>
     </div>
   </template>
+  <template id="js-template-auth">
+    <div class="l-container">
+      <form @submit.prevent="signIn">
+        <input type="email" v-model="email">
+        <input type="password" v-model="password">
+        <input type="submit">
+      </form>
+    </div>
+  </template>
 </body>
 </html>

@@ -126,6 +126,37 @@ window.addEventListener('load', () => {
       });
     }
   });
+  Vue.component('sign-in-form', {
+    template: document.getElementById('js-template-auth'),
+    data: function() {
+      return {email: '', password: ''};
+    },
+    methods: {
+      signIn: function() {
+        auth.signInWithEmailAndPassword(this.email, this.password).catch(e => {
+          // TODO: auth/wrong-passwordの時の処理
+          // TODO: auth/user-not-foundの時の処理
+          console.log(e.code);
+          console.log(e.message);
+        });
+      }
+    }
+  });
+  Vue.component('sign-up-form', {
+    template: document.getElementById('js-template-auth'),
+    data: function() {
+      return {email: '', password: ''};
+    },
+    methods: {
+      signIn: function() {
+        auth.createUserWithEmailAndPassword(this.email, this.password).catch(e => {
+          // TODO: auth/email-already-in-useの時の処理
+          console.log(e.code);
+          console.log(e.message);
+        });
+      }
+    }
+  });
   const pageContainer = new Vue({
     el: '#js-page-container',
     data: {
