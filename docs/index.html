@@ -86,9 +86,19 @@
   <template id="js-template-auth">
     <div class="l-container">
       <form @submit.prevent="signIn">
-        <input type="email" v-model="email">
-        <input type="password" v-model="password">
-        <input type="submit">
+        <div>
+          <label>
+            <span>Email:</span>
+            <input type="email" v-model="email" placeholder="e-mail">
+          </label>
+        </div>
+        <div>
+          <label>
+            <span>Password:</span>
+            <input type="password" v-model="password" placeholder="password">
+          </label>
+        </div>
+        <button type="submit">サインイン</button>
       </form>
     </div>
   </template>
