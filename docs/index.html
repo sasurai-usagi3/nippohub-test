@@ -85,20 +85,20 @@
   </template>
   <template id="js-template-auth">
     <div class="l-container">
-      <form @submit.prevent="signIn">
+      <form class="p-auth-form" @submit.prevent="signIn">
         <div>
           <label>
-            <span>Email:</span>
-            <input type="email" v-model="email" placeholder="e-mail">
+            <span class="p-auth-form__label">Email:</span>
+            <input class="p-auth-form__input"type="email" v-model="email" placeholder="e-mail">
           </label>
         </div>
-        <div>
+        <div class="u-mt-10">
           <label>
-            <span>Password:</span>
-            <input type="password" v-model="password" placeholder="password">
+            <span class="p-auth-form__label">Password:</span>
+            <input class="p-auth-form__input" type="password" v-model="password" placeholder="password">
           </label>
         </div>
-        <button type="submit">サインイン</button>
+        <button class="u-mt-20" type="submit">サインイン</button>
       </form>
     </div>
   </template>
