@@ -120,6 +120,25 @@ body {
  border-radius: 3px;
 }
 
+.p-auth-form__label {
+  display: inline-block;
+  width: 75px;
+  color: #fff;
+}
+
+.p-auth-form__input {
+  font-size: 12px;
+  padding: 5px;
+  border: 1px solid #777;
+  width: calc(100% - 100px); // TODO: 謎の間隔を消す
+  box-sizing: border-box;
+  border-radius: 2px;
+}
+
+.p-auth-form__input:focus {
+  outline: none;
+}
+
 .u-mt-10 {
   margin-top: 10px;
 }
