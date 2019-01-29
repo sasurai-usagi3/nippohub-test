@@ -7,13 +7,41 @@ window.addEventListener('load', () => {
     const database = firebase.database();
     const ui = new firebaseui.auth.AuthUI(auth);
     const normalizeDateElm = x => `0${x}`.slice(-2);
+    const memoPage = {
+      template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>',
+      props: ['date', 'currentUserId', 'memos'],
+      beforeRouteEnter: function(to, from, next) {
+        if(currentUser == null) {
+          router.push('/sign_in');
+          return;
+        }
+        next();
+      }
+    };
+    const signInPage = {
+      template: '<sign-in-page></sign-in-page>',
+      beforeRouteEnter: function(to, from, next) {
+        if(currentUser != null) {
+          router.push('/');
+          return;
+        }
+        next();
+      }
+    };
+    const signUpPage = {
+      template: '<sign-up-page></sign-up-page>',
+      beforeRouteEnter: function(to, from, next) {
+        if(currentUser != null) {
+          router.push('/');
+          return;
+        }
+        next();
+      }
+    }
     const routes = [
       {
         path: '/',
-        component: {
-          template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>',
-          props: ['date', 'currentUserId', 'memos']
-        },
+        component: memoPage,
         props: route => {
           const currentDateStr = route.query.date;
           const currentDate = (currentDateStr != null) ? new Date(currentDateStr) : new Date();
@@ -21,8 +49,8 @@ window.addEventListener('load', () => {
           return {date: currentDate}
         }
       },
-      {path: '/sign_in', component: {template: '<sign-in-page></sign-in-page>'}},
-      {path: '/sign_up', component: {template: '<sign-up-page></sign-up-page>'}}
+      {path: '/sign_in', component: signInPage},
+      {path: '/sign_up', component: signUpPage}
     ];
     const router = new VueRouter({routes});
     Vue.component('memo-form', {
@@ -174,22 +202,12 @@ window.addEventListener('load', () => {
         }
       }
     });
-    const currentPath = router.currentRoute.path;
     const btnToSignOut = document.getElementById('js-sign-out');
 
     btnToSignOut.addEventListener('click', () => {
       auth.signOut();
     });
 
-    if(currentUser != null) {
-      pageContainer.currentUserId = currentUser.uid;
-      if(currentPath === '/sign_in') {
-        router.push('/');
-      }
-    } else {
-      if(currentPath === '/') {
-        router.push('/sign_in');
-      }
-    }
+    pageContainer.currentUserId = (currentUser != null) ? currentUser.uid : null;
   });
 });
