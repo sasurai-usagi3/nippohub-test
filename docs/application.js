@@ -220,6 +220,7 @@ window.addEventListener('load', () => {
 
     btnToSignOut.addEventListener('click', () => {
       auth.signOut();
+      router.push('/sign_in');
     });
 
     auth.onAuthStateChanged(currentUser => {
