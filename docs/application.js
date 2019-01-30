@@ -3,7 +3,8 @@ Vue.use(VueRouter);
 window.addEventListener('load', () => {
   const auth = firebase.auth();
 
-  auth.onAuthStateChanged(currentUser => {
+  // NOTE: undescribeを内部で呼び出すことで擬似的にユーザ状態を読み込めた時に発火するイベントハンドラを作成している
+  const undescribe = auth.onAuthStateChanged(currentUser => {
     const database = firebase.database();
     const ui = new firebaseui.auth.AuthUI(auth);
     const normalizeDateElm = x => `0${x}`.slice(-2);
@@ -11,6 +12,9 @@ window.addEventListener('load', () => {
       template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>',
       props: ['date', 'currentUserId', 'memos'],
       beforeRouteEnter: function(to, from, next) {
+        const currentUser = auth.currentUser;
+        console.log(auth.currentUser);
+
         if(currentUser == null) {
           router.push('/sign_in');
           return;
@@ -21,6 +25,9 @@ window.addEventListener('load', () => {
     const signInPage = {
       template: '<sign-in-page></sign-in-page>',
       beforeRouteEnter: function(to, from, next) {
+        const currentUser = auth.currentUser;
+        console.log(auth.currentUser);
+
         if(currentUser != null) {
           router.push('/');
           return;
@@ -31,6 +38,9 @@ window.addEventListener('load', () => {
     const signUpPage = {
       template: '<sign-up-page></sign-up-page>',
       beforeRouteEnter: function(to, from, next) {
+        const currentUser = auth.currentUser;
+        console.log(auth.currentUser);
+
         if(currentUser != null) {
           router.push('/');
           return;
@@ -152,7 +162,9 @@ window.addEventListener('load', () => {
       },
       methods: {
         signIn: function() {
-          auth.signInWithEmailAndPassword(this.email, this.password).catch(e => {
+          auth.signInWithEmailAndPassword(this.email, this.password).then(() => {
+            router.push('/');
+          }).catch(e => {
             // TODO: auth/wrong-passwordの時の処理
             // TODO: auth/user-not-foundの時の処理
             console.log(e.code);
@@ -168,7 +180,9 @@ window.addEventListener('load', () => {
       },
       methods: {
         signIn: function() {
-          auth.createUserWithEmailAndPassword(this.email, this.password).catch(e => {
+          auth.createUserWithEmailAndPassword(this.email, this.password).then(() => {
+            router.push('/');
+          }).catch(e => {
             // TODO: auth/email-already-in-useの時の処理
             console.log(e.code);
             console.log(e.message);
@@ -208,6 +222,10 @@ window.addEventListener('load', () => {
       auth.signOut();
     });
 
-    pageContainer.currentUserId = (currentUser != null) ? currentUser.uid : null;
+    auth.onAuthStateChanged(currentUser => {
+      pageContainer.currentUserId = (currentUser != null) ? currentUser.uid : null;
+    });
+
+    undescribe(); // NOTE: 自らをundescribeする
   });
 });
