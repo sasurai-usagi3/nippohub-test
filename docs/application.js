@@ -13,7 +13,6 @@ window.addEventListener('load', () => {
       props: ['date', 'currentUserId', 'memos'],
       beforeRouteEnter: function(to, from, next) {
         const currentUser = auth.currentUser;
-        console.log(auth.currentUser);
 
         if(currentUser == null) {
           router.push('/sign_in');
@@ -26,7 +25,6 @@ window.addEventListener('load', () => {
       template: '<sign-in-page></sign-in-page>',
       beforeRouteEnter: function(to, from, next) {
         const currentUser = auth.currentUser;
-        console.log(auth.currentUser);
 
         if(currentUser != null) {
           router.push('/');
@@ -39,7 +37,6 @@ window.addEventListener('load', () => {
       template: '<sign-up-page></sign-up-page>',
       beforeRouteEnter: function(to, from, next) {
         const currentUser = auth.currentUser;
-        console.log(auth.currentUser);
 
         if(currentUser != null) {
           router.push('/');
