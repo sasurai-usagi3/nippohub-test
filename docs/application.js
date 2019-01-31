@@ -224,14 +224,6 @@ window.addEventListener('load', () => {
         }
       }
     });
-    // const btnToSignOut = document.getElementById('js-sign-out');
-
-/*
-    btnToSignOut.addEventListener('click', () => {
-      auth.signOut();
-      router.push('/sign_in');
-    });
-*/
 
     auth.onAuthStateChanged(currentUser => {
       pageContainer.currentUserId = (currentUser != null) ? currentUser.uid : null;
