@@ -88,12 +88,13 @@ body {
   margin-top: 1.5rem;
 }
 
-.p-sign-out-link {
+.p-auth-link {
   background-color: transparent;
   color: #fff;
   border: none;
   display: inline;
   text-decoration: underline;
+  font-size: 12px;
 }
 
 .p-sign-out-link:hover {

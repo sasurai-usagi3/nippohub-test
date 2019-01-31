@@ -37,11 +37,11 @@
       <div class="l-header__content p-header-content">
         <h1 class="p-page-title">NippoHub be-ta</h1>
         <div v-if="hasSignIn">
-          <button class="p-sign-out-link" @click="signOut">サインアウト</button>
+          <button class="p-auth-link" @click="signOut">サインアウト</button>
         </div>
         <div v-else>
-          <router-link to="/sign_up" class="p-sign-out-link">サインアップ</router-link>
-          <router-link to="/sign_in" class="p-sign-out-link">サインイン</router-link>
+          <router-link to="/sign_up" class="p-auth-link">サインアップ</router-link>
+          <router-link to="/sign_in" class="p-auth-link">サインイン</router-link>
         </div>
       </div>
     </header>
