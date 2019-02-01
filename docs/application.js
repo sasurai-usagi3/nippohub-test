@@ -162,10 +162,14 @@ window.addEventListener('load', () => {
           auth.signInWithEmailAndPassword(this.email, this.password).then(() => {
             router.push('/');
           }).catch(e => {
-            // TODO: auth/wrong-passwordの時の処理
-            // TODO: auth/user-not-foundの時の処理
-            console.log(e.code);
-            console.log(e.message);
+            if(e.code === 'auth/wrong-password') {
+              alert('パスワードが違います');
+            } else if(e.code === 'auth/user-not-found') {
+              alert('パスワードが違います');
+            } else {
+              console.error(e.code);
+              console.error(e.message);
+            }
           });
         }
       }
@@ -180,9 +184,12 @@ window.addEventListener('load', () => {
           auth.createUserWithEmailAndPassword(this.email, this.password).then(() => {
             router.push('/');
           }).catch(e => {
-            // TODO: auth/email-already-in-useの時の処理
-            console.log(e.code);
-            console.log(e.message);
+            if(e.code === 'auth/email-already-in-use') {
+              alert('ご入力のメールアドレスは登録済みです');
+            } else {
+              console.error(e.code);
+              console.error(e.message);
+            }
           });
         }
       }
