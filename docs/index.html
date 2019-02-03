@@ -14,8 +14,9 @@
   <meta name="twitter:description" content="分報サービス">
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.7.1/firebase.js"></script>
-  <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase-database.js"></script>
   <script>
     const config = {
       apiKey: 'AIzaSyCXywBE-aluaZRia5n2mNZpZQZqBIz0WTw',
@@ -35,7 +36,7 @@
   <div id="js-page-container">
     <header class="l-header">
       <div class="l-header__content p-header-content">
-        <h1 class="p-page-title">NippoHub be-ta</h1>
+        <h1 class="p-page-title">NippoHub 分報</h1>
         <div v-if="hasSignIn">
           <button class="p-auth-link" @click="signOut">サインアウト</button>
         </div>
@@ -51,7 +52,8 @@
     <div class="p-modal__background" @click="close"></div>
     <div class="p-modal__box">
       <span>まとめた結果</span>
-      <textarea id="js-summary-area" class="p-text-field u-mt-10" readonly></textarea>
+      <textarea id="js-summary-area" class="p-text-field u-mt-10" readonly @click="copyToClipBoard"></textarea>
+      <span class="p-modal-sentence">- テキストボックスをクリックするとクリップボードにコピーされます。</span>
     </div>
   </div>
   <template id="js-template-form-memo">
@@ -84,10 +86,10 @@
     </div>
   </template>
   <template id="js-template-sign-in-page">
-    <sign-in-form></sign-in-form>
+    <sign-in-form btn-sentence="サインイン"></sign-in-form>
   </template>
   <template id="js-template-sign-up-page">
-    <sign-up-form></sign-up-form>
+    <sign-up-form btn-sentence="サインアップ"></sign-up-form>
   </template>
   <template id="js-template-auth">
     <div class="l-container">
@@ -104,7 +106,7 @@
             <input class="p-auth-form__input" type="password" v-model="password" placeholder="password">
           </label>
         </div>
-        <button class="u-mt-20" type="submit">サインイン</button>
+        <button class="u-mt-20" type="submit">{{ btnSentence }}</button>
       </form>
     </div>
   </template>
