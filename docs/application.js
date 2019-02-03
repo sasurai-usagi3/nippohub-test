@@ -44,7 +44,7 @@ window.addEventListener('load', () => {
         }
         next();
       }
-    }
+    };
     const routes = [
       {
         path: '/',
