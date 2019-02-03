@@ -2,167 +2,246 @@ Vue.use(VueRouter);
 
 window.addEventListener('load', () => {
   const auth = firebase.auth();
-  const database = firebase.database();
-  const ui = new firebaseui.auth.AuthUI(auth);
-  const normalizeDateElm = x => `0${x}`.slice(-2);
-  const routes = [
-    {
-      path: '/',
-      component: {
-        template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>',
-        props: ['date', 'currentUserId', 'memos']
+
+  // NOTE: undescribeを内部で呼び出すことで擬似的にユーザ状態を読み込めた時に発火するイベントハンドラを作成している
+  const undescribe = auth.onAuthStateChanged(currentUser => {
+    const database = firebase.database();
+    const normalizeDateElm = x => `0${x}`.slice(-2);
+    const memoPage = {
+      template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>',
+      props: ['date', 'currentUserId', 'memos'],
+      beforeRouteEnter: function(to, from, next) {
+        const currentUser = auth.currentUser;
+
+        if(currentUser == null) {
+          router.push('/sign_in');
+          return;
+        }
+        next();
+      }
+    };
+    const signInPage = {
+      template: '<sign-in-page></sign-in-page>',
+      beforeRouteEnter: function(to, from, next) {
+        const currentUser = auth.currentUser;
+
+        if(currentUser != null) {
+          router.push('/');
+          return;
+        }
+        next();
+      }
+    };
+    const signUpPage = {
+      template: '<sign-up-page></sign-up-page>',
+      beforeRouteEnter: function(to, from, next) {
+        const currentUser = auth.currentUser;
+
+        if(currentUser != null) {
+          router.push('/');
+          return;
+        }
+        next();
+      }
+    };
+    const routes = [
+      {
+        path: '/',
+        component: memoPage,
+        props: route => {
+          const currentDateStr = route.query.date;
+          const currentDate = (currentDateStr != null) ? new Date(currentDateStr) : new Date();
+
+          return {date: currentDate}
+        }
       },
-      props: route => {
-        const currentDateStr = route.query.date;
-        const currentDate = (currentDateStr != null) ? new Date(currentDateStr) : new Date();
+      {path: '/sign_in', component: signInPage},
+      {path: '/sign_up', component: signUpPage}
+    ];
+    const router = new VueRouter({routes});
+    Vue.component('memo-form', {
+      template: document.getElementById('js-template-form-memo'),
+      props: ['currentUserId', 'hidden'],
+      methods: {
+        submit: function() {
+          const memoTextField = document.getElementById('js-content-text-field');
+          const userId = this.currentUserId;
 
-        return {date: currentDate}
+          database.ref(`users/${userId}/memos`).push({
+            contents: memoTextField.value,
+            userId: userId,
+            timestamp: Date.now()
+          });
+          memoTextField.value = '';
+        }
       }
-    },
-    {path: '/sign_in', component: {template: '<auth-page></auth-page>'}}
-  ];
-  const router = new VueRouter({routes});
-  Vue.component('memo-form', {
-    template: document.getElementById('js-template-form-memo'),
-    props: ['currentUserId', 'hidden'],
-    methods: {
-      submit: function() {
-        const memoTextField = document.getElementById('js-content-text-field');
-        const userId = this.currentUserId;
+    });
+    Vue.component('memo-list', {
+      template: document.getElementById('js-template-memo-list').innerHTML,
+      data: function() {
+        return {memos: []}
+      },
+      props: ['date', 'currentUserId'],
+      watch: {
+        date: function() {
+          const beginningOfCurrentDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), 0, 0, 0);
+          const endOfCurrentDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), 23, 59, 59, 999);
+          database.ref(`users/${this.currentUserId}/memos`).off('value');
+          database.ref(`users/${this.currentUserId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
+            const data = r.val();
+            let memos = [];
 
-        database.ref(`users/${userId}/memos`).push({
-          contents: memoTextField.value,
-          userId: userId,
-          timestamp: Date.now()
-        });
-        memoTextField.value = '';
+            for(let v in data) {
+              const createdAt = new Date(data[v].timestamp);
+              const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
+              const contents = data[v].contents;
+
+              memos.push({contents: contents, createdAt: createdAtStr});
+            }
+
+            this.memos = memos;
+          });
+        }
       }
-    }
-  });
-  Vue.component('memo-list', {
-    template: document.getElementById('js-template-memo-list').innerHTML,
-    data: function() {
-      return {memos: []}
-    },
-    props: ['date', 'currentUserId'],
-    watch: {
-      date: function() {
-        const beginningOfCurrentDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), 0, 0, 0);
-        const endOfCurrentDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), 23, 59, 59, 999);
-        database.ref(`users/${this.currentUserId}/memos`).off('value');
-        database.ref(`users/${this.currentUserId}/memos`).orderByChild('timestamp').startAt(beginningOfCurrentDate.getTime()).endAt(endOfCurrentDate.getTime()).on('value', r => {
-          const data = r.val();
-          let memos = [];
-
-          for(let v in data) {
-            const createdAt = new Date(data[v].timestamp);
-            const createdAtStr = `${createdAt.getFullYear()}-${normalizeDateElm(createdAt.getMonth() + 1)}-${normalizeDateElm(createdAt.getDate())} ${normalizeDateElm(createdAt.getHours())}:${normalizeDateElm(createdAt.getMinutes())}:${normalizeDateElm(createdAt.getSeconds())}`;
-            const contents = data[v].contents;
-
-            memos.push({contents: contents, createdAt: createdAtStr});
+    });
+    Vue.component('memo-page', {
+      template: document.getElementById('js-template-memo-page'),
+      props: ['currentUserId', 'hidden', 'date', 'memos'],
+      computed: {
+        dateStr: function() {
+          return (this.date != null) ? `${this.date.getFullYear()}-${normalizeDateElm(this.date.getMonth() + 1)}-${normalizeDateElm(this.date.getDate())}` : 'xxxx-xx-xx';
+        },
+        previousDateUrl: function() {
+          if(this.date == null) {
+            return '/#/';
           }
 
-          this.memos = memos;
-        });
-      }
-    }
-  });
-  Vue.component('memo-page', {
-    template: document.getElementById('js-template-memo-page'),
-    props: ['currentUserId', 'hidden', 'date', 'memos'],
-    computed: {
-      dateStr: function() {
-        return (this.date != null) ? `${this.date.getFullYear()}-${normalizeDateElm(this.date.getMonth() + 1)}-${normalizeDateElm(this.date.getDate())}` : 'xxxx-xx-xx';
-      },
-      previousDateUrl: function() {
-        if(this.date == null) {
-          return '/#/';
+          const previousDay = new Date(this.date.getTime() - 24 * 3600 * 1000);
+
+          return `/#/?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
+        },
+        nextDateUrl: function() {
+          if(this.date == null) {
+            return '/#/';
+          }
+
+          const nextDay = new Date(this.date.getTime() + 24 * 3600 * 1000);
+
+          return `/#/?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
+        },
+        isToday: function() {
+          const today = new Date();
+          const date = this.date;
+
+          return date != null && date.getYear() === today.getYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate();
         }
-
-        const previousDay = new Date(this.date.getTime() - 24 * 3600 * 1000);
-
-        return `/#/?date=${previousDay.getFullYear()}-${normalizeDateElm(previousDay.getMonth() + 1)}-${normalizeDateElm(previousDay.getDate())}`;
       },
-      nextDateUrl: function() {
-        if(this.date == null) {
-          return '/#/';
+      methods: {
+        summaryMemos: function() {
+          const contentsDOM = document.querySelectorAll('.js-memo-contents');
+          const summaryArea = document.getElementById('js-summary-area');
+          let contents = '';
+
+          contentsDOM.forEach(x => {
+            contents += `${x.textContent}\n`;
+          });
+
+          summaryArea.value = contents;
+          modal.hidden = false;
         }
-
-        const nextDay = new Date(this.date.getTime() + 24 * 3600 * 1000);
-
-        return `/#/?date=${nextDay.getFullYear()}-${normalizeDateElm(nextDay.getMonth() + 1)}-${normalizeDateElm(nextDay.getDate())}`;
+      }
+    });
+    Vue.component('sign-in-form', {
+      template: document.getElementById('js-template-auth'),
+      props: ['btnSentence'],
+      data: function() {
+        return {email: '', password: ''};
       },
-      isToday: function() {
-        const today = new Date();
-        const date = this.date;
-
-        return date != null && date.getYear() === today.getYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate();
+      methods: {
+        signIn: function() {
+          auth.signInWithEmailAndPassword(this.email, this.password).then(() => {
+            router.push('/');
+          }).catch(e => {
+            if(e.code === 'auth/wrong-password') {
+              alert('パスワードが違います');
+            } else if(e.code === 'auth/user-not-found') {
+              alert('パスワードが違います');
+            } else {
+              console.error(e.code);
+              console.error(e.message);
+            }
+          });
+        }
       }
-    },
-    methods: {
-      summaryMemos: function() {
-        const contentsDOM = document.querySelectorAll('.js-memo-contents');
-        const summaryArea = document.getElementById('js-summary-area');
-        let contents = '';
-
-        contentsDOM.forEach(x => {
-          contents += `${x.textContent}\n`;
-        });
-
-        summaryArea.value = contents;
-        modal.hidden = false;
+    });
+    Vue.component('sign-up-form', {
+      template: document.getElementById('js-template-auth'),
+      props: ['btnSentence'],
+      data: function() {
+        return {email: '', password: ''};
+      },
+      methods: {
+        signIn: function() {
+          auth.createUserWithEmailAndPassword(this.email, this.password).then(() => {
+            router.push('/');
+          }).catch(e => {
+            if(e.code === 'auth/email-already-in-use') {
+              alert('ご入力のメールアドレスは登録済みです');
+            } else {
+              console.error(e.code);
+              console.error(e.message);
+            }
+          });
+        }
       }
-    }
-  });
-  Vue.component('auth-page', {
-    template: document.getElementById('js-template-auth-page'),
-    props: ['hidden'],
-    mounted: function() {
-      ui.start('#js-form-auth-area', {
-        signInSuccessUrl: '/',
-        signInOptions: [
-          firebase.auth.EmailAuthProvider.PROVIDER_ID
-        ]
-      });
-    }
-  });
-  const pageContainer = new Vue({
-    el: '#js-page-container',
-    data: {
-      currentUserId: null,
-      date: null,
-      memos: []
-    },
-    router
-  });
-  const modal = new Vue({
-    el: '#js-modal',
-    data: {
-      hidden: true
-    },
-    methods: {
-      close: function() {
-        this.hidden = true;
+    });
+    Vue.component('sign-in-page', {
+      template: document.getElementById('js-template-sign-in-page')
+    });
+    Vue.component('sign-up-page', {
+      template: document.getElementById('js-template-sign-up-page')
+    });
+    const pageContainer = new Vue({
+      el: '#js-page-container',
+      data: {
+        currentUserId: null,
+        date: null,
+        memos: []
+      },
+      computed: {
+        hasSignIn: function() {
+          return this.currentUserId != null
+        }
+      },
+      methods: {
+        signOut: function() {
+          auth.signOut();
+          router.push('/sign_in');
+        }
+      },
+      router
+    });
+    const modal = new Vue({
+      el: '#js-modal',
+      data: {
+        hidden: true
+      },
+      methods: {
+        close: function() {
+          this.hidden = true;
+        },
+        copyToClipBoard: function() {
+          const summaryArea = document.getElementById('js-summary-area');
+          summaryArea.select();
+          document.execCommand('copy');
+        }
       }
-    }
-  });
-  const currentPath = router.currentRoute.path;
-  const btnToSignOut = document.getElementById('js-sign-out');
+    });
 
-  btnToSignOut.addEventListener('click', () => {
-    auth.signOut();
-  });
+    auth.onAuthStateChanged(currentUser => {
+      pageContainer.currentUserId = (currentUser != null) ? currentUser.uid : null;
+    });
 
-  auth.onAuthStateChanged(currentUser => {
-    if(currentUser != null) {
-      pageContainer.currentUserId = currentUser.uid;
-      if(currentPath === '/sign_in') {
-        router.push('/');
-      }
-    } else {
-      if(currentPath === '/') {
-        router.push('/sign_in');
-      }
-    }
+    undescribe(); // NOTE: 自らをundescribeする
   });
 });

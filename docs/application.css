@@ -88,12 +88,13 @@ body {
   margin-top: 1.5rem;
 }
 
-.p-sign-out-link {
+.p-auth-link {
   background-color: transparent;
   color: #fff;
   border: none;
   display: inline;
   text-decoration: underline;
+  font-size: 12px;
 }
 
 .p-sign-out-link:hover {
@@ -118,6 +119,30 @@ body {
  padding: 30px 20px;
  width: 640px;
  border-radius: 3px;
+}
+
+.p-auth-form__label {
+  display: inline-block;
+  width: 75px;
+  color: #fff;
+}
+
+.p-auth-form__input {
+  font-size: 12px;
+  padding: 5px;
+  border: 1px solid #777;
+  width: calc(100% - 100px); // TODO: 謎の間隔を消す
+  box-sizing: border-box;
+  border-radius: 2px;
+}
+
+.p-auth-form__input:focus {
+  outline: none;
+}
+
+.p-modal-sentence {
+  display: inline-block;
+  margin-top: 10px;
 }
 
 .u-mt-10 {
