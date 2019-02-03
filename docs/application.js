@@ -230,6 +230,11 @@ window.addEventListener('load', () => {
       methods: {
         close: function() {
           this.hidden = true;
+        },
+        copyToClipBoard: function() {
+          const summaryArea = document.getElementById('js-summary-area');
+          summaryArea.select();
+          document.execCommand('copy');
         }
       }
     });

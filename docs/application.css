@@ -140,6 +140,11 @@ body {
   outline: none;
 }
 
+.p-modal-sentence {
+  display: inline-block;
+  margin-top: 10px;
+}
+
 .u-mt-10 {
   margin-top: 10px;
 }

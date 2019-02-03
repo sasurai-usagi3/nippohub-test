@@ -51,7 +51,8 @@
     <div class="p-modal__background" @click="close"></div>
     <div class="p-modal__box">
       <span>まとめた結果</span>
-      <textarea id="js-summary-area" class="p-text-field u-mt-10" readonly></textarea>
+      <textarea id="js-summary-area" class="p-text-field u-mt-10" readonly @click="copyToClipBoard"></textarea>
+      <span class="p-modal-sentence">- テキストボックスをクリックするとクリップボードにコピーされます。</span>
     </div>
   </div>
   <template id="js-template-form-memo">
