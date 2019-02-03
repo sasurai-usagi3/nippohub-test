@@ -6,7 +6,6 @@ window.addEventListener('load', () => {
   // NOTE: undescribeを内部で呼び出すことで擬似的にユーザ状態を読み込めた時に発火するイベントハンドラを作成している
   const undescribe = auth.onAuthStateChanged(currentUser => {
     const database = firebase.database();
-    const ui = new firebaseui.auth.AuthUI(auth);
     const normalizeDateElm = x => `0${x}`.slice(-2);
     const memoPage = {
       template: '<memo-page :date="date" :current-user-id="currentUserId" :memos="memos"></memo-page>',
