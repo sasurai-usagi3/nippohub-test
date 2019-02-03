@@ -84,10 +84,10 @@
     </div>
   </template>
   <template id="js-template-sign-in-page">
-    <sign-in-form></sign-in-form>
+    <sign-in-form btn-sentence="サインイン"></sign-in-form>
   </template>
   <template id="js-template-sign-up-page">
-    <sign-up-form></sign-up-form>
+    <sign-up-form btn-sentence="サインアップ"></sign-up-form>
   </template>
   <template id="js-template-auth">
     <div class="l-container">
@@ -104,7 +104,7 @@
             <input class="p-auth-form__input" type="password" v-model="password" placeholder="password">
           </label>
         </div>
-        <button class="u-mt-20" type="submit">サインイン</button>
+        <button class="u-mt-20" type="submit">{{ btnSentence }}</button>
       </form>
     </div>
   </template>

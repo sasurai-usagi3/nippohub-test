@@ -154,6 +154,7 @@ window.addEventListener('load', () => {
     });
     Vue.component('sign-in-form', {
       template: document.getElementById('js-template-auth'),
+      props: ['btnSentence'],
       data: function() {
         return {email: '', password: ''};
       },
@@ -176,6 +177,7 @@ window.addEventListener('load', () => {
     });
     Vue.component('sign-up-form', {
       template: document.getElementById('js-template-auth'),
+      props: ['btnSentence'],
       data: function() {
         return {email: '', password: ''};
       },
